@@ -1,0 +1,3300 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <link rel="preconnect" href="https://ikgrbnoxlnzanbljrsso.supabase.co" />
+  <link rel="dns-prefetch" href="https://ikgrbnoxlnzanbljrsso.supabase.co" />
+
+  <!-- ═══════════════════════════════════════════
+       PRIMARY SEO
+  ═══════════════════════════════════════════ -->
+  <title>Hearts For Humanity — H4H-KSA | Alfaisal University</title>
+  <meta name="description" content="Hearts For Humanity (H4H-KSA) is a student-led charitable initiative at Alfaisal University in Riyadh. We run donation drives, meal distribution, and community outreach for those in need across Saudi Arabia." />
+  <meta name="keywords" content="Hearts For Humanity, H4H, H4H-KSA, Alfaisal University, charity Riyadh, volunteer Saudi Arabia, donation drive KSA, meal distribution Riyadh, community outreach, student charity" />
+  <meta name="author" content="Hearts For Humanity — H4H-KSA" />
+  <meta name="robots" content="index, follow" />
+  <meta name="theme-color" content="#B5606A" />
+  <link rel="canonical" href="https://h4h-ksa.netlify.app/" />
+
+  <!-- ═══════════════════════════════════════════
+       OPEN GRAPH (WhatsApp, Facebook, LinkedIn)
+  ═══════════════════════════════════════════ -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://h4h-ksa.netlify.app/" />
+  <meta property="og:title"       content="Hearts For Humanity — H4H-KSA" />
+  <meta property="og:description" content="A student-led initiative at Alfaisal University running donation drives, meal distribution, and community outreach for those in need in Saudi Arabia." />
+  <meta property="og:image"       content="https://h4h-ksa.netlify.app/logo2.png" />
+  <meta property="og:image:width"  content="512" />
+  <meta property="og:image:height" content="512" />
+  <meta property="og:locale"      content="en_US" />
+  <meta property="og:locale:alternate" content="ar_SA" />
+  <meta property="og:site_name"   content="Hearts For Humanity" />
+
+  <!-- ═══════════════════════════════════════════
+       TWITTER / X CARD
+  ═══════════════════════════════════════════ -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="Hearts For Humanity — H4H-KSA" />
+  <meta name="twitter:description" content="Student-led charity at Alfaisal University — donation drives, meal distribution & community outreach across Saudi Arabia." />
+  <meta name="twitter:image"       content="https://h4h-ksa.netlify.app/logo2.png" />
+
+  <!-- ═══════════════════════════════════════════
+       STRUCTURED DATA (Google Rich Results)
+  ═══════════════════════════════════════════ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "NGO",
+    "name": "Hearts For Humanity",
+    "alternateName": "H4H-KSA",
+    "url": "https://h4h-ksa.netlify.app/",
+    "logo": "https://h4h-ksa.netlify.app/logo2.png",
+    "description": "A student-led charitable initiative at Alfaisal University in Riyadh, running donation drives, meal distribution, and community outreach for those in need across Saudi Arabia.",
+    "foundingLocation": {
+      "@type": "Place",
+      "name": "Alfaisal University, Riyadh, Saudi Arabia"
+    },
+    "areaServed": "Saudi Arabia",
+    "sameAs": [
+      "https://www.instagram.com/h4h.ksa"
+    ]
+  }
+  </script>
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            serif: ['Playfair Display', 'serif'],
+          },
+          colors: {
+            brand: {
+              gold: '#B5606A',
+              amber: '#D4848E',
+              cream: '#FDF0F2',
+              dark: '#12060A',
+              charcoal: '#1A080E',
+              warm: '#2D1215',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <!-- Supabase -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+
+  <style>
+    /* =============================================
+       BASE & RESET
+    ============================================= */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: auto; /* GSAP takes over smooth scrolling */
+      overflow-x: hidden;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background: #12060A;
+      color: #FDF0F2;
+      overflow-x: hidden;
+    }
+
+    /* =============================================
+       BACKGROUND CANVAS (image-sequence scrubbing)
+    ============================================= */
+    #bg-canvas-wrapper {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: #12060A;
+    }
+
+    #bg-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      object-fit: cover; /* mirrored via JS drawImage */
+    }
+
+    /* Dark gradient vignette over canvas */
+    #bg-canvas-wrapper::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        radial-gradient(ellipse at center, transparent 30%, rgba(18,6,10,0.55) 100%),
+        linear-gradient(to bottom, rgba(18,6,10,0.3) 0%, rgba(18,6,10,0.15) 40%, rgba(18,6,10,0.5) 100%);
+      pointer-events: none;
+    }
+
+    /* =============================================
+       MAIN CONTENT — SCROLLABLE, SITS ABOVE VIDEO
+    ============================================= */
+    #main-content {
+      position: relative;
+      z-index: 10;
+    }
+
+    /* =============================================
+       SCROLL TRACK — controls total scroll length
+    ============================================= */
+    #scroll-track {
+      /* The video scrubbable zone. Height controls how long the scrubbing lasts. */
+    }
+
+    /* =============================================
+       GLASS CARD
+    ============================================= */
+    .glass-card {
+      background: rgba(20, 14, 6, 0.55);
+      backdrop-filter: blur(18px);
+      -webkit-backdrop-filter: blur(18px);
+      border: 1px solid rgba(181, 96, 106, 0.2);
+      border-radius: 1.25rem;
+    }
+
+    .glass-card-light {
+      background: rgba(255, 255, 255, 0.07);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 1.25rem;
+    }
+
+    /* =============================================
+       GRADIENT TEXT
+    ============================================= */
+    .gradient-text {
+      background: linear-gradient(135deg, #D4848E 0%, #B5606A 50%, #FDF0F2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    /* =============================================
+       SECTION COMMON PADDING
+    ============================================= */
+    .section-inner {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+    }
+
+    /* =============================================
+       NAV
+    ============================================= */
+    #navbar {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      transition: background 0.4s, box-shadow 0.4s;
+      padding: 1rem 2rem;
+    }
+
+    #navbar.scrolled {
+      background: rgba(18, 6, 10, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 2px 40px rgba(0,0,0,0.5);
+    }
+
+    .nav-link {
+      position: relative;
+      color: rgba(253, 246, 227, 0.8);
+      font-size: 0.875rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.25rem 0;
+      transition: color 0.3s;
+    }
+
+    .nav-link::after {
+      content: '';
+      position: absolute;
+      bottom: -2px;
+      left: 0;
+      width: 0;
+      height: 2px;
+      background: linear-gradient(90deg, #B5606A, #D4848E);
+      transition: width 0.3s ease;
+    }
+
+    .nav-link:hover { color: #D4848E; }
+    .nav-link:hover::after { width: 100%; }
+
+    /* =============================================
+       HERO — Two-column (lavikatiyar style)
+    ============================================= */
+    #hero {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 7rem 1.5rem 4rem;
+      position: relative;
+    }
+    /* subtle grid lines */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(181,96,106,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(181,96,106,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+    .hero-inner {
+      position: relative; z-index: 1;
+      width: 100%; max-width: 1400px; margin: 0 auto;
+      display: grid; grid-template-columns: 1fr 1fr; gap: 4rem; align-items: center;
+    }
+    @media(max-width:900px) {
+      .hero-inner { grid-template-columns: 1fr; }
+      .hero-right-col { display: none; }
+      #hero { text-align: center; padding: 7rem 2rem 4rem; }
+    }
+    .hero-left-col { display: flex; flex-direction: column; gap: 1.5rem; }
+    .hero-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(3rem, 6vw, 5.5rem);
+      font-weight: 900; line-height: 1.05;
+      color: #FDF0F2;
+      text-shadow: 0 4px 40px rgba(0,0,0,0.5);
+    }
+    .hero-subtitle {
+      font-size: clamp(0.95rem, 1.8vw, 1.1rem);
+      font-weight: 300;
+      color: rgba(253,240,242,0.7);
+      max-width: 480px; line-height: 1.75;
+    }
+    /* Layered photo cards */
+    .hero-right-col {
+      position: relative; height: 620px; left: 60px;
+    }
+    .hero-photo-card {
+      position: absolute; border-radius: 1.5rem; overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6);
+      border: 2px solid rgba(255,255,255,0.07);
+      transition: transform 0.4s ease;
+    }
+    .hero-photo-card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+    .hero-photo-card:nth-child(1) { width: 360px; height: 460px; top: 60px; left: 0;    transform: rotate(-5deg); z-index: 1; }
+    .hero-photo-card:nth-child(2) { width: 340px; height: 420px; top: 100px; left: 110px; transform: rotate(2deg);  z-index: 2; }
+    .hero-photo-card:nth-child(3) { width: 290px; height: 360px; top: 20px; left: 230px; transform: rotate(-1deg); z-index: 3; }
+    .hero-photo-card:hover { transform: rotate(0deg) scale(1.04) translateY(-6px) !important; z-index: 10; }
+
+    .cta-button {
+      display: inline-block;
+      padding: 1rem 2.5rem;
+      background: linear-gradient(135deg, #B5606A, #D4848E);
+      color: #12060A;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      border-radius: 9999px;
+      text-decoration: none;
+      box-shadow: 0 4px 30px rgba(181, 96, 106, 0.5);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .cta-button::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, #D4848E, #FDF0F2);
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .cta-button:hover {
+      transform: translateY(-3px) scale(1.03);
+      box-shadow: 0 8px 40px rgba(181, 96, 106, 0.7);
+    }
+
+    .cta-button:hover::before { opacity: 1; }
+    .cta-button span { position: relative; z-index: 1; }
+
+    /* Scroll indicator */
+    .scroll-indicator {
+      position: absolute;
+      bottom: 2.5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.5rem;
+      opacity: 0.6;
+      animation: bounce 2s infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50%       { transform: translateX(-50%) translateY(8px); }
+    }
+
+    .scroll-indicator span {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(253,246,227,0.7);
+    }
+
+    /* =============================================
+       ABOUT
+    ============================================= */
+    #about {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem;
+    }
+
+    /* =============================================
+       WHAT WE DO
+    ============================================= */
+    #what-we-do {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem;
+    }
+
+    .activity-card {
+      background: rgba(20, 14, 6, 0.6);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(181, 96, 106, 0.15);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2rem;
+      transition: transform 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .activity-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, #B5606A, #D4848E);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.4s ease;
+    }
+
+    .activity-card:hover {
+      transform: translateY(-8px);
+      border-color: rgba(181, 96, 106, 0.4);
+      box-shadow: 0 20px 60px rgba(181, 96, 106, 0.15);
+    }
+
+    .activity-card:hover::before { transform: scaleX(1); }
+
+    .card-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 1rem;
+      background: linear-gradient(135deg, rgba(181,96,106,0.2), rgba(232,168,50,0.1));
+      border: 1px solid rgba(181,96,106,0.3);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 1.5rem;
+      font-size: 1.75rem;
+    }
+
+    /* =============================================
+       EVENTS SECTION — THE PAUSE ZONE
+    ============================================= */
+    #events {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 0;
+      /* Solid dark background so it clearly feels "outside" the video scrub */
+      background: rgba(18, 6, 10, 0.0); /* will be overlaid by JS */
+      position: relative;
+    }
+
+    #events {
+      z-index: 10;
+    }
+
+    /* ── Carousel ── */
+    .carousel-outer {
+      position: relative;
+    }
+
+    .carousel-container {
+      overflow: hidden;
+      width: 100%;
+    }
+
+    .carousel-track {
+      display: flex;
+      gap: 20px;
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+
+    /* 3 cards visible on desktop */
+    .carousel-slide {
+      flex: 0 0 calc(33.333% - 14px);
+      min-width: 0;
+      position: relative;
+      height: 340px;
+      border-radius: 1.25rem;
+      overflow: hidden;
+      border: 1px solid rgba(181,96,106,0.18);
+      box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+      transition: transform 0.35s, box-shadow 0.35s;
+    }
+
+    .carousel-slide:hover {
+      transform: translateY(-6px) scale(1.015);
+      box-shadow: 0 20px 60px rgba(181,96,106,0.25);
+    }
+
+    /* 2 cards on tablet */
+    @media (max-width: 1024px) {
+      .carousel-slide { flex: 0 0 calc(50% - 10px); }
+    }
+
+    /* 1 card on mobile */
+    @media (max-width: 640px) {
+      .carousel-slide { flex: 0 0 100%; height: 260px; }
+    }
+
+    .carousel-slide img,
+    .carousel-slide video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      transition: transform 0.5s ease;
+    }
+
+    .carousel-slide:hover img,
+    .carousel-slide:hover video {
+      transform: scale(1.06);
+    }
+
+    /* Caption overlay */
+    .slide-caption {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      background: linear-gradient(to top, rgba(18,6,10,0.92) 0%, rgba(18,6,10,0.3) 60%, transparent 100%);
+      padding: 2.5rem 1.25rem 1rem;
+      pointer-events: none;
+    }
+
+    /* Carousel nav arrows — flanking the track */
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 20;
+      width: 48px;
+      height: 48px;
+      border-radius: 9999px;
+      background: rgba(181,96,106,0.88);
+      border: 2px solid rgba(232,168,50,0.5);
+      color: #12060A;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s, box-shadow 0.3s;
+      box-shadow: 0 4px 20px rgba(181,96,106,0.45);
+    }
+
+    .carousel-btn:hover {
+      background: #D4848E;
+      transform: translateY(-50%) scale(1.12);
+      box-shadow: 0 8px 30px rgba(181,96,106,0.65);
+    }
+
+    .carousel-btn:disabled {
+      opacity: 0.25;
+      cursor: not-allowed;
+    }
+
+    .carousel-btn-prev { left: -28px; }
+    .carousel-btn-next { right: -28px; }
+
+    /* Carousel Dots */
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-top: 1.5rem;
+    }
+
+    .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 9999px;
+      background: rgba(181, 96, 106, 0.35);
+      cursor: pointer;
+      transition: background 0.3s, transform 0.3s, width 0.3s;
+    }
+
+    .dot.active {
+      background: #D4848E;
+      width: 24px;
+    }
+
+
+    /* =============================================
+       GET INVOLVED / FOOTER
+    ============================================= */
+    #get-involved {
+      min-height: 80vh;
+      display: flex;
+      align-items: center;
+      padding: 6rem 2rem;
+      position: relative;
+    }
+
+    /* Final dark overlay for footer readability */
+    #get-involved::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: rgba(18, 6, 10, 0.75);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      z-index: 0;
+    }
+
+    #get-involved > * { position: relative; z-index: 1; }
+
+    /* Form */
+    .form-input {
+      width: 100%;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(181,96,106,0.25);
+      border-radius: 0.75rem;
+      padding: 0.875rem 1.25rem;
+      color: #FDF0F2;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+    }
+
+    .form-input::placeholder { color: rgba(253,246,227,0.4); }
+
+    .form-input:focus {
+      border-color: #B5606A;
+      background: rgba(181, 96, 106, 0.08);
+    }
+
+    .form-label {
+      display: block;
+      font-size: 0.8rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: rgba(253,246,227,0.6);
+      margin-bottom: 0.5rem;
+    }
+
+    /* Social icons */
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 48px;
+      height: 48px;
+      border-radius: 9999px;
+      border: 1px solid rgba(181,96,106,0.3);
+      color: rgba(253,246,227,0.7);
+      transition: all 0.3s;
+      text-decoration: none;
+    }
+
+    .social-link:hover {
+      background: rgba(181,96,106,0.15);
+      border-color: #B5606A;
+      color: #D4848E;
+      transform: translateY(-3px);
+    }
+
+    /* =============================================
+       SECTION HEADINGS
+    ============================================= */
+    .section-eyebrow {
+      font-size: 0.75rem;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: #B5606A;
+      margin-bottom: 0.75rem;
+    }
+
+    .section-title {
+      font-family: 'Playfair Display', serif;
+      font-size: clamp(2rem, 5vw, 3.5rem);
+      font-weight: 900;
+      line-height: 1.1;
+      text-shadow: 0 2px 20px rgba(0,0,0,0.8);
+    }
+
+    /* =============================================
+       STAT COUNTER CHIPS
+    ============================================= */
+    .stat-chip {
+      display: inline-flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 1.25rem 2rem;
+      background: rgba(181,96,106,0.1);
+      border: 1px solid rgba(181,96,106,0.2);
+      border-radius: 1rem;
+      gap: 0.25rem;
+    }
+
+    .stat-chip .stat-num {
+      font-family: 'Playfair Display', serif;
+      font-size: 2rem;
+      font-weight: 900;
+      color: #D4848E;
+      line-height: 1;
+    }
+
+    .stat-chip .stat-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(253,246,227,0.6);
+    }
+
+    /* =============================================
+       DIVIDER
+    ============================================= */
+    .gold-divider {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #B5606A 30%, #D4848E 50%, #B5606A 70%, transparent);
+      margin: 2rem 0;
+    }
+
+    /* =============================================
+       ANIMATIONS INIT (hidden before GSAP)
+    ============================================= */
+    .anim-fade-up {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+
+    .anim-fade-in {
+      opacity: 0;
+    }
+
+    .anim-scale-in {
+      opacity: 0;
+      transform: scale(0.9);
+    }
+
+    /* =============================================
+       FOOTER BAR
+    ============================================= */
+    footer {
+      background: rgba(6,4,2,0.97);
+      border-top: 1px solid rgba(181,96,106,0.15);
+      position: relative;
+      z-index: 20;
+    }
+
+    /* =============================================
+       RESPONSIVE TWEAKS
+    ============================================= */
+    #mobile-menu-btn { display: none; }
+    @media (max-width: 768px) {
+      .carousel-slide { height: 320px; }
+      .carousel-btn { width: 40px; height: 40px; }
+      #mobile-menu-btn { display: flex; }
+    }
+
+    /* =============================================
+       VIDEO PAUSED FREEZE OVERLAY (subtle)
+    ============================================= */
+    #video-freeze-line {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 3px;
+      height: 100%;
+      background: linear-gradient(to bottom, transparent, #B5606A, transparent);
+      z-index: 300;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s;
+    }
+  </style>
+</head>
+<body>
+
+<!-- ============================================================
+     FIXED BACKGROUND CANVAS (image sequence)
+============================================================ -->
+<div id="bg-canvas-wrapper">
+  <canvas id="bg-canvas"></canvas>
+</div>
+
+<!-- Loading screen -->
+<div id="site-loader" style="
+  position:fixed;inset:0;z-index:9999;
+  background:#12060A;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1.25rem;
+  transition:opacity 0.7s ease;
+">
+  <div style="font-size:2.5rem">🤲</div>
+  <div style="
+    width:48px;height:48px;border-radius:50%;
+    border:3px solid rgba(181,96,106,0.2);
+    border-top-color:#B5606A;
+    animation:spin 0.85s linear infinite;
+  "></div>
+  <div class="loader-text" style="color:#D4848E;font-size:0.8rem;letter-spacing:0.12em;text-transform:uppercase;">Loading…</div>
+</div>
+<style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+
+<!-- Video freeze accent line -->
+<div id="video-freeze-line"></div>
+
+<!-- ============================================================
+     NAVBAR
+============================================================ -->
+<nav id="navbar">
+  <div class="max-w-7xl mx-auto flex items-center justify-between">
+    <!-- Logo -->
+    <a href="#hero" class="flex items-center gap-2 text-decoration-none">
+      <img src="logo2.png" alt="Hearts For Humanity" class="h-10 w-10 rounded-xl object-cover" />
+      <span class="font-bold text-base tracking-wide hidden sm:block"
+            style="color: #FDF0F2;">Hearts For Humanity</span>
+    </a>
+
+    <!-- Nav Links (desktop only) -->
+    <div class="hidden md:flex items-center gap-6" style="font-size:0.82rem;">
+      <a href="#about"        class="nav-link" data-i18n="nav_about">About</a>
+      <a href="#events"       class="nav-link" data-i18n="nav_events">Events</a>
+      <a href="#team"         class="nav-link" data-i18n="nav_team">Team</a>
+      <a href="#gallery"      class="nav-link" data-i18n="nav_gallery">Gallery</a>
+      <a href="#subteams"     class="nav-link" data-i18n="nav_subteams">Subteams</a>
+    </div>
+
+    <!-- Right buttons + Mobile hamburger -->
+    <div class="flex items-center gap-3" style="margin-left:1.5rem;">
+      <!-- Language Toggle -->
+      <button id="lang-toggle" onclick="toggleLang()"
+        style="padding:0.4rem 1rem;border-radius:9999px;border:1px solid rgba(181,96,106,0.5);background:rgba(181,96,106,0.1);color:#D4848E;font-size:0.8rem;font-weight:700;cursor:pointer;letter-spacing:0.05em;transition:background 0.2s;">
+        عربي
+      </button>
+      <!-- Donate button -->
+      <button onclick="document.getElementById('donate-modal').style.display='flex'"
+        style="padding:0.6rem 1.25rem;border-radius:9999px;border:none;background:linear-gradient(135deg,#25D366,#1da851);color:#fff;font-size:0.78rem;font-weight:700;cursor:pointer;letter-spacing:0.04em;display:flex;align-items:center;gap:0.4rem;transition:opacity 0.2s;"
+        onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
+        <svg width="14" height="14" viewBox="0 0 32 32" fill="white"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.52.698 4.875 1.91 6.885L2 30l7.31-1.875A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm6.29 18.882c-.344-.172-2.036-1.004-2.352-1.118-.316-.114-.546-.172-.776.172-.23.344-.89 1.118-1.09 1.348-.2.23-.4.258-.744.086-.344-.172-1.452-.536-2.766-1.708-1.022-.912-1.712-2.038-1.912-2.382-.2-.344-.022-.53.15-.702.156-.154.344-.402.516-.602.172-.2.23-.344.344-.574.114-.23.058-.43-.028-.602-.086-.172-.776-1.872-1.064-2.562-.28-.672-.564-.58-.776-.59l-.66-.012c-.23 0-.602.086-.918.43-.316.344-1.204 1.176-1.204 2.868s1.232 3.326 1.404 3.556c.172.23 2.426 3.706 5.878 5.196.822.354 1.462.566 1.962.724.824.262 1.574.226 2.166.138.66-.1 2.036-.832 2.322-1.634.286-.802.286-1.49.2-1.634-.086-.144-.316-.23-.66-.402z"/></svg>
+        <span data-i18n="nav_donate">Donate</span>
+      </button>
+      <!-- CTA (hidden on mobile) -->
+      <a href="#get-involved" class="cta-button hidden md:inline-flex" style="padding: 0.6rem 1.5rem; font-size:0.8rem; white-space:nowrap;">
+        <span data-i18n="nav_join">Join Us</span>
+      </a>
+      <!-- Hamburger (mobile only) -->
+      <button id="mobile-menu-btn" onclick="toggleMobileMenu()"
+        style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.35);border-radius:0.5rem;padding:0.45rem 0.55rem;cursor:pointer;display:flex;flex-direction:column;gap:5px;align-items:center;justify-content:center;">
+        <span class="mobile-bar" style="display:block;width:20px;height:2px;background:#D4848E;border-radius:2px;transition:all 0.3s;"></span>
+        <span class="mobile-bar" style="display:block;width:20px;height:2px;background:#D4848E;border-radius:2px;transition:all 0.3s;"></span>
+        <span class="mobile-bar" style="display:block;width:20px;height:2px;background:#D4848E;border-radius:2px;transition:all 0.3s;"></span>
+      </button>
+    </div>
+  </div>
+
+</nav>
+
+<!-- Mobile Menu — fixed right panel -->
+<div id="mobile-menu" style="display:none;position:fixed;top:4rem;right:0.75rem;height:auto;width:190px;background:rgba(12,4,8,0.97);backdrop-filter:blur(20px);border:1px solid rgba(181,96,106,0.2);border-radius:1rem;z-index:200;padding:1rem 1.25rem 1.25rem;flex-direction:column;gap:0.1rem;" class="md:hidden">
+  <a href="#about"        class="nav-link" data-i18n="nav_about"        onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">About</a>
+  <a href="#impact"       class="nav-link" data-i18n="nav_impact"       onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Impact</a>
+  <a href="#events"       class="nav-link" data-i18n="nav_events"       onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Events</a>
+  <a href="#mission"      class="nav-link" data-i18n="nav_mission"      onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Mission</a>
+  <a href="#team"         class="nav-link" data-i18n="nav_team"         onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Team</a>
+  <a href="#news"         class="nav-link" data-i18n="nav_news"         onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">News</a>
+  <a href="#gallery"      class="nav-link" data-i18n="nav_gallery"      onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Gallery</a>
+  <a href="#subteams"     class="nav-link" data-i18n="nav_subteams"     onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Subteams</a>
+  <a href="#testimonials" class="nav-link" data-i18n="nav_testimonials" onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Testimonials</a>
+  <a href="#newsletter"   class="nav-link" data-i18n="nav_newsletter"   onclick="closeMobileMenu()" style="padding:0.55rem 0;border-bottom:1px solid rgba(181,96,106,0.08);display:block;font-size:0.8rem;">Newsletter</a>
+  <a href="#get-involved" class="cta-button" onclick="closeMobileMenu()" style="margin-top:1rem;text-align:center;padding:0.6rem;display:block;font-size:0.78rem;">
+    <span data-i18n="nav_join">Join Us</span>
+  </a>
+</div>
+<!-- Backdrop -->
+<div id="mobile-menu-backdrop" onclick="closeMobileMenu()" style="display:none;position:fixed;inset:0;z-index:199;background:rgba(0,0,0,0.4);" class="md:hidden"></div>
+
+<!-- ============================================================
+     MAIN SCROLLABLE CONTENT
+============================================================ -->
+<div id="main-content">
+
+  <!-- ========================================================
+       SECTION 1 — HERO
+  ======================================================== -->
+  <section id="hero" class="relative">
+    <div class="hero-inner">
+
+      <!-- LEFT: Text -->
+      <div class="hero-left-col">
+        <div class="anim-fade-in" style="animation-delay:0.1s;">
+          <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold tracking-widest uppercase"
+               style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.35);color:#D4848E;width:fit-content;">
+            <span>✦</span> <span data-i18n="hero_badge">Student-Led Initiative</span> <span>✦</span>
+          </div>
+        </div>
+
+        <h1 class="hero-title anim-fade-up">
+          <span class="gradient-text">Hearts</span><br/>
+          <span>For</span><br/>
+          <span>Humanity</span>
+        </h1>
+
+        <p class="hero-subtitle anim-fade-up" data-i18n="hero_sub">
+          Making a difference — one person, one meal, one act of kindness at a time.
+        </p>
+
+        <div class="anim-fade-up" style="display:flex;gap:1rem;flex-wrap:wrap;">
+          <a href="#get-involved" class="cta-button" style="padding:0.9rem 2rem;font-size:0.9rem;">
+            <span data-i18n="hero_cta">⟡ Support the Cause</span>
+          </a>
+          <a href="#about" style="display:inline-flex;align-items:center;gap:0.4rem;padding:0.9rem 1.75rem;border-radius:3rem;border:1px solid rgba(181,96,106,0.35);color:rgba(253,240,242,0.75);font-size:0.9rem;text-decoration:none;transition:border-color 0.2s;" onmouseover="this.style.borderColor='rgba(181,96,106,0.7)'" onmouseout="this.style.borderColor='rgba(181,96,106,0.35)'">
+            <span data-i18n="learn_more_arrow">Learn More →</span>
+          </a>
+        </div>
+
+        <div class="flex flex-wrap gap-4 anim-fade-up">
+          <div class="stat-chip"><span class="stat-num">50+</span><span class="stat-label" data-i18n="stat_meals">Meals Served</span></div>
+          <div class="stat-chip"><span class="stat-num">3+</span><span class="stat-label" data-i18n="stat_events">Events</span></div>
+          <div class="stat-chip"><span class="stat-num">100%</span><span class="stat-label" data-i18n="stat_vol">Volunteer-Run</span></div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Layered photos -->
+      <div class="hero-right-col anim-fade-in" style="animation-delay:0.4s;">
+        <div class="hero-photo-card">
+          <img src="galary/Screenshot 2026-06-24 214036.png" alt="H4H Team" />
+        </div>
+        <div class="hero-photo-card">
+          <img src="galary/Screenshot 2026-06-24 215301.png" alt="H4H Gathering" />
+        </div>
+        <div class="hero-photo-card">
+          <img src="galary/Screenshot 2026-06-24 213840.png" alt="H4H Members" />
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Scroll indicator -->
+    <div class="scroll-indicator">
+      <span data-i18n="scroll_lbl">Scroll</span>
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SPACER — video scrubs here
+  ======================================================== -->
+  <div id="scrub-spacer-1" style="height:40vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;">
+    <div class="anim-fade-up" style="text-align:center;padding:0 1.5rem;">
+      <p style="font-size:clamp(1.4rem,4vw,2.4rem);font-family:'Playfair Display',serif;color:rgba(253,240,242,0.92);text-shadow:0 2px 24px rgba(0,0,0,0.7);font-weight:700;line-height:1.4;max-width:700px;">
+        "Every act of giving is a seed<br/>planted in someone else's future."
+      </p>
+      <div style="margin-top:1.25rem;display:flex;align-items:center;justify-content:center;gap:0.75rem;">
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,transparent,#B5606A);"></div>
+        <span style="font-size:0.75rem;font-weight:700;letter-spacing:0.14em;text-transform:uppercase;color:#D4848E;">Hearts For Humanity</span>
+        <div style="height:1px;width:40px;background:linear-gradient(90deg,#B5606A,transparent);"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SECTION 2 — ABOUT US
+  ======================================================== -->
+  <section id="about" class="min-h-screen flex items-center py-24 px-4">
+    <div class="section-inner w-full">
+      <div class="grid md:grid-cols-2 gap-16 items-center">
+
+        <!-- Text -->
+        <div class="space-y-6">
+          <p class="section-eyebrow anim-fade-up" data-i18n="about_eyebrow">Our Story</p>
+          <h2 class="section-title anim-fade-up" data-i18n="about_title">
+            Helping Hands<br/>
+            <span class="gradient-text">for Homeless</span>
+          </h2>
+          <div class="gold-divider anim-fade-in"></div>
+          <p class="text-base leading-relaxed anim-fade-up"
+             style="color: rgba(253,246,227,0.8); text-shadow: 0 1px 8px rgba(0,0,0,0.8);" data-i18n="about_p1">
+            H4H <em>(Hearts For Humanity)</em> is a <strong style="color:#D4848E;">healthcare and medical student-led</strong> charitable initiative at Alfaisal University — driven by empathy, clinical knowledge, and a commitment to real community impact.
+          </p>
+          <p class="text-base leading-relaxed anim-fade-up"
+             style="color: rgba(253,246,227,0.8); text-shadow: 0 1px 8px rgba(0,0,0,0.8);" data-i18n="about_p2">
+            We run medical education workshops, health screenings, donation drives, and community outreach — serving underprivileged families in shelters, orphanages, and low-income neighborhoods across Saudi Arabia.
+          </p>
+          <p class="text-base leading-relaxed anim-fade-up"
+             style="color: rgba(253,246,227,0.75); text-shadow: 0 1px 8px rgba(0,0,0,0.8);" data-i18n="about_p3">
+            H4H operates under <strong style="color:#D4848E;">Alfaisal University's MSA</strong>, uniting skilled healthcare providers with one shared goal: creating a healthier, more dignified environment for the vulnerable.
+          </p>
+        </div>
+
+        <!-- Glass card -->
+        <div class="glass-card p-8 space-y-6 anim-scale-in">
+          <div class="text-4xl">🤝</div>
+          <h3 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;" data-i18n="about_mission_title">Our Mission</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.75);" data-i18n="about_mission_text">
+            To bridge the gap between those who have and those who need — through organized action,
+            genuine empathy, and consistent community presence.
+          </p>
+          <div class="gold-divider"></div>
+          <ul class="space-y-3">
+            <li class="flex items-center gap-3 text-sm" style="color:rgba(253,246,227,0.8);">
+              <span style="color:#D4848E; font-size:1rem;">✦</span>
+              <span data-i18n="about_li1">Student-led &amp; passion-driven</span>
+            </li>
+            <li class="flex items-center gap-3 text-sm" style="color:rgba(253,246,227,0.8);">
+              <span style="color:#D4848E; font-size:1rem;">✦</span>
+              <span data-i18n="about_li2">Alfaisal University, Riyadh</span>
+            </li>
+            <li class="flex items-center gap-3 text-sm" style="color:rgba(253,246,227,0.8);">
+              <span style="color:#D4848E; font-size:1rem;">✦</span>
+              <span data-i18n="about_li3">Led under Alfaisal University's MSA</span>
+            </li>
+            <li class="flex items-center gap-3 text-sm" style="color:rgba(253,246,227,0.8);">
+              <span style="color:#D4848E; font-size:1rem;">✦</span>
+              <span data-i18n="about_li4">100% volunteer-driven operations</span>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       IMPACT COUNTERS
+  ======================================================== -->
+  <section id="impact" class="py-24 px-4">
+    <div class="section-inner w-full">
+      <div class="text-center space-y-4 mb-16">
+        <p class="section-eyebrow anim-fade-up" data-i18n="impact_eyebrow">Our Impact</p>
+        <h2 class="section-title anim-fade-up" data-i18n="impact_title">Numbers That <span class="gradient-text">Matter</span></h2>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <div class="glass-card p-8 text-center anim-scale-in" style="animation-delay:0.1s;">
+          <div class="text-5xl font-black mb-2 gradient-text counter" data-target="500">0</div>
+          <div class="text-xs uppercase tracking-widest font-semibold mt-2" style="color:rgba(253,246,227,0.5);" data-i18n="impact_meals">Meals Served</div>
+        </div>
+        <div class="glass-card p-8 text-center anim-scale-in" style="animation-delay:0.2s;">
+          <div class="text-5xl font-black mb-2 gradient-text counter" data-target="120">0</div>
+          <div class="text-xs uppercase tracking-widest font-semibold mt-2" style="color:rgba(253,246,227,0.5);" data-i18n="impact_vol">Volunteers</div>
+        </div>
+        <div class="glass-card p-8 text-center anim-scale-in" style="animation-delay:0.3s;">
+          <div class="text-5xl font-black mb-2 gradient-text counter" data-target="18">0</div>
+          <div class="text-xs uppercase tracking-widest font-semibold mt-2" style="color:rgba(253,246,227,0.5);" data-i18n="impact_events">Events Held</div>
+        </div>
+        <div class="glass-card p-8 text-center anim-scale-in" style="animation-delay:0.4s;">
+          <div class="text-5xl font-black mb-2 gradient-text counter" data-target="300">0</div>
+          <div class="text-xs uppercase tracking-widest font-semibold mt-2" style="color:rgba(253,246,227,0.5);" data-i18n="impact_lives">Lives Touched</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       QUOTE BANNER
+  ======================================================== -->
+  <section id="quote-banner" class="py-20 px-4">
+    <div class="section-inner w-full">
+      <div class="glass-card p-12 md:p-16 text-center relative overflow-hidden anim-scale-in">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(181,96,106,0.12),rgba(212,132,142,0.06));pointer-events:none;"></div>
+        <div style="font-size:5rem;line-height:1;color:#B5606A;opacity:0.3;font-family:Georgia,serif;position:absolute;top:1rem;left:2rem;">"</div>
+        <p class="relative text-2xl md:text-3xl font-light leading-relaxed mx-auto" style="max-width:750px;font-family:'Playfair Display',serif;color:rgba(253,246,227,0.9);text-shadow:0 2px 20px rgba(0,0,0,0.5);">
+          <span data-i18n="quote_text">No act of kindness, no matter how small, is ever wasted. Every meal shared, every hand extended — it echoes far beyond the moment.</span>
+        </p>
+        <div class="mt-8 flex items-center justify-center gap-3">
+          <div style="height:1px;width:40px;background:linear-gradient(90deg,transparent,#B5606A);"></div>
+          <span class="text-sm font-semibold" style="color:#D4848E;letter-spacing:0.12em;text-transform:uppercase;">Hearts For Humanity</span>
+          <div style="height:1px;width:40px;background:linear-gradient(90deg,#B5606A,transparent);"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SCRUB SPACER 2
+  ======================================================== -->
+  <div id="scrub-spacer-2" style="height:40vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;">
+    <div class="anim-fade-up" style="display:flex;gap:2rem;flex-wrap:wrap;justify-content:center;padding:0 1.5rem;">
+      <div style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);backdrop-filter:blur(12px);border-radius:1.25rem;padding:1.5rem 2rem;text-align:center;min-width:140px;">
+        <div style="font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#B5606A,#D4848E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">500+</div>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(253,240,242,0.6);margin-top:0.3rem;">Meals Served</div>
+      </div>
+      <div style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);backdrop-filter:blur(12px);border-radius:1.25rem;padding:1.5rem 2rem;text-align:center;min-width:140px;">
+        <div style="font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#B5606A,#D4848E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">120+</div>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(253,240,242,0.6);margin-top:0.3rem;">Volunteers</div>
+      </div>
+      <div style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);backdrop-filter:blur(12px);border-radius:1.25rem;padding:1.5rem 2rem;text-align:center;min-width:140px;">
+        <div style="font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#B5606A,#D4848E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">18+</div>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(253,240,242,0.6);margin-top:0.3rem;">Events Held</div>
+      </div>
+      <div style="background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);backdrop-filter:blur(12px);border-radius:1.25rem;padding:1.5rem 2rem;text-align:center;min-width:140px;">
+        <div style="font-size:2.2rem;font-weight:900;background:linear-gradient(135deg,#B5606A,#D4848E);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">300+</div>
+        <div style="font-size:0.7rem;text-transform:uppercase;letter-spacing:0.1em;color:rgba(253,240,242,0.6);margin-top:0.3rem;">Lives Touched</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SECTION 3 — WHAT WE DO
+  ======================================================== -->
+  <section id="what-we-do" class="min-h-screen flex items-center py-24 px-4">
+    <div class="section-inner w-full space-y-16">
+
+      <!-- Heading -->
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up" data-i18n="wwd_eyebrow">Our Activities</p>
+        <h2 class="section-title anim-fade-up" data-i18n="wwd_title">What We <span class="gradient-text">Do</span></h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up"
+           style="color:rgba(253,246,227,0.7); text-shadow:0 1px 8px rgba(0,0,0,0.7);" data-i18n="wwd_sub">
+          Four pillars of action — delivered by healthcare students who bring both compassion and clinical expertise to every initiative.
+        </p>
+      </div>
+
+      <!-- Cards grid -->
+      <div class="grid md:grid-cols-2 gap-8" style="max-width:1100px;margin:0 auto;">
+
+        <!-- Card 1 -->
+        <div class="activity-card anim-scale-in" style="animation-delay:0.1s;">
+          <div class="card-icon">🩺</div>
+          <h3 class="text-xl font-bold mb-3" style="font-family:'Playfair Display',serif;" data-i18n="wwd_card1_title">Medical Education Workshops</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.7);" data-i18n="wwd_card1_desc">
+            We bring healthcare knowledge directly to shelters, orphanages, and low-income schools — running workshops on CPR &amp; First Aid, menstrual health, emergency response, and mental health support.
+          </p>
+          <a href="organizing.html" class="mt-6 flex items-center gap-2 text-xs font-semibold" style="color:#B5606A; letter-spacing:0.08em; text-decoration:none;">
+            <span data-i18n="wwd_learn_more">Learn More</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="activity-card anim-scale-in" style="animation-delay:0.2s;">
+          <div class="card-icon">🩻</div>
+          <h3 class="text-xl font-bold mb-3" style="font-family:'Playfair Display',serif;" data-i18n="wwd_card2_title">Health Checkups &amp; Screening</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.7);" data-i18n="wwd_card2_desc">
+            Our medical student volunteers conduct free health screenings for breast &amp; cervical cancer and comorbidities like hypertension and diabetes — reaching communities who have no other access to care.
+          </p>
+          <a href="outreach.html" class="mt-6 flex items-center gap-2 text-xs font-semibold" style="color:#B5606A; letter-spacing:0.08em; text-decoration:none;">
+            <span data-i18n="wwd_learn_more">Learn More</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="activity-card anim-scale-in" style="animation-delay:0.3s;">
+          <div class="card-icon">📦</div>
+          <h3 class="text-xl font-bold mb-3" style="font-family:'Playfair Display',serif;" data-i18n="wwd_card3_title">Donation Programs</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.7);" data-i18n="wwd_card3_desc">
+            We collect and distribute medications, clothes, and female hygiene products to underprivileged families — ensuring every person receives support with full dignity and care.
+          </p>
+          <a href="organizing.html" class="mt-6 flex items-center gap-2 text-xs font-semibold" style="color:#B5606A; letter-spacing:0.08em; text-decoration:none;">
+            <span data-i18n="wwd_learn_more">Learn More</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="activity-card anim-scale-in" style="animation-delay:0.4s;">
+          <div class="card-icon">🕌</div>
+          <h3 class="text-xl font-bold mb-3" style="font-family:'Playfair Display',serif;" data-i18n="wwd_card4_title">Collaborative Volunteering</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.7);" data-i18n="wwd_card4_desc">
+            We partner with H4H Jeddah for Umrah Medical Camps, collaborate with the SAKINAH group on women's health, and establish community support systems for the underprivileged.
+          </p>
+          <a href="outreach.html" class="mt-6 flex items-center gap-2 text-xs font-semibold" style="color:#B5606A; letter-spacing:0.08em; text-decoration:none;">
+            <span data-i18n="wwd_learn_more">Learn More</span>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </a>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       HOW IT WORKS
+  ======================================================== -->
+  <section id="how-it-works" class="py-24 px-4">
+    <div class="section-inner w-full">
+      <div class="text-center space-y-4 mb-16">
+        <p class="section-eyebrow anim-fade-up" data-i18n="hiw_eyebrow">The Process</p>
+        <h2 class="section-title anim-fade-up" data-i18n="hiw_title">How It <span class="gradient-text">Works</span></h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up" style="color:rgba(253,246,227,0.7);" data-i18n="hiw_sub">
+          Getting involved is simple. Here's how we turn compassion into action.
+        </p>
+      </div>
+      <div class="grid md:grid-cols-3 gap-8 relative">
+        <!-- connector line desktop -->
+        <div class="hidden md:block absolute top-12 left-1/4 right-1/4 h-px" style="background:linear-gradient(90deg,transparent,#B5606A,transparent);opacity:0.4;"></div>
+
+        <div class="glass-card p-8 text-center space-y-4 anim-fade-up" style="animation-delay:0.1s;">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl font-black" style="background:linear-gradient(135deg,#B5606A,#D4848E);color:#12060A;">1</div>
+          <h3 class="text-lg font-bold" style="font-family:'Playfair Display',serif;" data-i18n="hiw_step1">Sign Up</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.65);" data-i18n="hiw_desc1">Fill in the form below with your name, email, and how you'd like to help. Takes less than a minute.</p>
+        </div>
+
+        <div class="glass-card p-8 text-center space-y-4 anim-fade-up" style="animation-delay:0.2s;">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl font-black" style="background:linear-gradient(135deg,#B5606A,#D4848E);color:#12060A;">2</div>
+          <h3 class="text-lg font-bold" style="font-family:'Playfair Display',serif;" data-i18n="hiw_step2">Get Connected</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.65);" data-i18n="hiw_desc2">We'll add you to our WhatsApp group and notify you about upcoming events, drives, and field visits.</p>
+        </div>
+
+        <div class="glass-card p-8 text-center space-y-4 anim-fade-up" style="animation-delay:0.3s;">
+          <div class="w-16 h-16 rounded-full flex items-center justify-center mx-auto text-2xl font-black" style="background:linear-gradient(135deg,#B5606A,#D4848E);color:#12060A;">3</div>
+          <h3 class="text-lg font-bold" style="font-family:'Playfair Display',serif;" data-i18n="hiw_step3">Make Impact</h3>
+          <p class="text-sm leading-relaxed" style="color:rgba(253,246,227,0.65);" data-i18n="hiw_desc3">Show up, give your time, and witness first-hand the difference your hands can make in someone's life.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FAQ
+  ======================================================== -->
+  <section id="faq" class="py-24 px-4">
+    <div class="section-inner w-full">
+      <div class="text-center space-y-4 mb-16">
+        <p class="section-eyebrow anim-fade-up" data-i18n="faq_eyebrow">Questions</p>
+        <h2 class="section-title anim-fade-up" data-i18n="faq_title">Frequently <span class="gradient-text">Asked</span></h2>
+      </div>
+      <!-- Ripple circle element -->
+      <div id="faq-ripple" style="position:fixed;pointer-events:none;z-index:9999;width:60px;height:60px;border-radius:50%;border:2px solid #D4848E;transform:translate(-50%,-50%) scale(0);opacity:0;transition:opacity 0.2s,transform 0.4s cubic-bezier(0.22,1,0.36,1);"></div>
+
+      <div class="max-w-2xl mx-auto space-y-4" id="faq-list">
+
+        <div class="faq-item glass-card p-6 cursor-pointer anim-fade-up" style="animation-delay:0.1s;">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-sm" data-i18n="faq_q1">Do I need any prior experience to volunteer?</p>
+            <span class="faq-arrow text-xl" style="color:#D4848E;transition:transform 0.3s;">+</span>
+          </div>
+          <p class="faq-answer text-sm mt-4 leading-relaxed hidden" style="color:rgba(253,246,227,0.65);" data-i18n="faq_a1">Not at all. All you need is a willing heart and a few hours of your time. We guide every new volunteer through the process.</p>
+        </div>
+
+        <div class="faq-item glass-card p-6 cursor-pointer anim-fade-up" style="animation-delay:0.15s;">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-sm" data-i18n="faq_q2">How often do events take place?</p>
+            <span class="faq-arrow text-xl" style="color:#D4848E;transition:transform 0.3s;">+</span>
+          </div>
+          <p class="faq-answer text-sm mt-4 leading-relaxed hidden" style="color:rgba(253,246,227,0.65);" data-i18n="faq_a2">We aim to hold events every 2–3 weeks. You'll receive updates via our WhatsApp group as soon as an event is confirmed.</p>
+        </div>
+
+        <div class="faq-item glass-card p-6 cursor-pointer anim-fade-up" style="animation-delay:0.2s;">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-sm" data-i18n="faq_q3">Is H4H open to students from all majors?</p>
+            <span class="faq-arrow text-xl" style="color:#D4848E;transition:transform 0.3s;">+</span>
+          </div>
+          <p class="faq-answer text-sm mt-4 leading-relaxed hidden" style="color:rgba(253,246,227,0.65);" data-i18n="faq_a3">Yes! Hearts For Humanity welcomes every Alfaisal student regardless of major, year, or background. Compassion has no prerequisites.</p>
+        </div>
+
+        <div class="faq-item glass-card p-6 cursor-pointer anim-fade-up" style="animation-delay:0.25s;">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-sm" data-i18n="faq_q4">What kind of donations do you accept?</p>
+            <span class="faq-arrow text-xl" style="color:#D4848E;transition:transform 0.3s;">+</span>
+          </div>
+          <p class="faq-answer text-sm mt-4 leading-relaxed hidden" style="color:rgba(253,246,227,0.65);" data-i18n="faq_a4">We accept clothing, non-perishable food items, hygiene products, and blankets. Monetary donations can also be arranged — contact us for details.</p>
+        </div>
+
+        <div class="faq-item glass-card p-6 cursor-pointer anim-fade-up" style="animation-delay:0.3s;">
+          <div class="flex items-center justify-between">
+            <p class="font-semibold text-sm" data-i18n="faq_q5">Will I get a volunteer certificate?</p>
+            <span class="faq-arrow text-xl" style="color:#D4848E;transition:transform 0.3s;">+</span>
+          </div>
+          <p class="faq-answer text-sm mt-4 leading-relaxed hidden" style="color:rgba(253,246,227,0.65);" data-i18n="faq_a5">We are working on issuing participation certificates for active volunteers. Stay tuned for announcements in the WhatsApp group.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SCRUB SPACER 3
+  ======================================================== -->
+  <div id="scrub-spacer-3" style="height:40vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;">
+    <div class="anim-fade-up" style="text-align:center;padding:0 1.5rem;">
+      <div style="display:inline-flex;align-items:center;gap:0.5rem;background:rgba(181,96,106,0.2);border:1px solid rgba(181,96,106,0.35);backdrop-filter:blur(10px);border-radius:9999px;padding:0.5rem 1.25rem;margin-bottom:1.25rem;">
+        <span style="width:8px;height:8px;border-radius:50%;background:#D4848E;display:inline-block;animation:pulse 1.5s infinite;"></span>
+        <span data-i18n="spacer3_badge" style="font-size:0.72rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#D4848E;">Active in Riyadh</span>
+      </div>
+      <p data-i18n="spacer3_text" style="font-size:clamp(1.2rem,3.5vw,2rem);font-family:'Playfair Display',serif;color:rgba(253,240,242,0.9);text-shadow:0 2px 20px rgba(0,0,0,0.7);font-weight:700;line-height:1.45;max-width:600px;">
+        Compassion isn't just a feeling —<br/>it's showing up when it matters most.
+      </p>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SECTION 4 — EVENTS (THE PAUSE ZONE)
+  ======================================================== -->
+  <section id="events" class="py-24 px-4">
+    <div class="section-inner w-full space-y-12">
+
+      <!-- Heading -->
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up" data-i18n="events_eyebrow">✦ Our Impact in Action ✦</p>
+        <h2 class="section-title anim-fade-up" data-i18n="events_title">
+          Past &amp; Upcoming <span class="gradient-text">Events</span>
+        </h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up"
+           style="color:rgba(253,246,227,0.7);" data-i18n="events_sub">
+          A glimpse into the moments that define us — captured during our field trips and community outreach drives.
+        </p>
+      </div>
+
+      <!-- Upcoming Events cards (loaded from Supabase) -->
+      <div id="upcoming-events-wrap" style="display:none;">
+        <p class="section-eyebrow" style="text-align:center;margin-bottom:1rem;" data-i18n="events_upcoming_label">✦ Upcoming ✦</p>
+        <div id="upcoming-events-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;margin-bottom:3rem;"></div>
+      </div>
+
+      <!-- Carousel wrapper -->
+      <div class="carousel-outer anim-scale-in" style="padding: 0 36px;">
+        <div class="carousel-container">
+          <div class="carousel-track" id="carousel-track">
+
+            <!-- Slide 1 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.08 AM.jpeg"
+                   alt="H4H Community Event" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Community Drive</p>
+                <p class="text-base font-semibold">Reaching Out to Those in Need</p>
+              </div>
+            </div>
+
+            <!-- Slide 2 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.08 AM (1).jpeg"
+                   alt="H4H Event" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Field Visit</p>
+                <p class="text-base font-semibold">On the Ground, Making a Difference</p>
+              </div>
+            </div>
+
+            <!-- Slide 3 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.09 AM.jpeg"
+                   alt="H4H Meal Distribution" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Meal Distribution</p>
+                <p class="text-base font-semibold">Food, Warmth &amp; Dignity</p>
+              </div>
+            </div>
+
+            <!-- Slide 4 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.38 AM.jpeg"
+                   alt="H4H Donation Drive" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Donation Drive</p>
+                <p class="text-base font-semibold">Every Contribution Counts</p>
+              </div>
+            </div>
+
+            <!-- Slide 5 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.38 AM (1).jpeg"
+                   alt="H4H Team in Action" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Team in Action</p>
+                <p class="text-base font-semibold">Students Serving the Community</p>
+              </div>
+            </div>
+
+            <!-- Slide 6 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.38 AM (2).jpeg"
+                   alt="H4H Outreach" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Outreach</p>
+                <p class="text-base font-semibold">Compassion in Every Step</p>
+              </div>
+            </div>
+
+            <!-- Slide 7 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.39 AM.jpeg"
+                   alt="H4H Community" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Community</p>
+                <p class="text-base font-semibold">Building Bridges of Hope</p>
+              </div>
+            </div>
+
+            <!-- Slide 8 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.39 AM (1).jpeg"
+                   alt="H4H Event Highlights" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Highlights</p>
+                <p class="text-base font-semibold">Moments We'll Never Forget</p>
+              </div>
+            </div>
+
+            <!-- Slide 9 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.39 AM (2).jpeg"
+                   alt="H4H Impact" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Impact</p>
+                <p class="text-base font-semibold">Small Actions, Big Change</p>
+              </div>
+            </div>
+
+            <!-- Slide 10 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.26.39 AM (3).jpeg"
+                   alt="H4H Drive" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">Drive Day</p>
+                <p class="text-base font-semibold">Turning Kindness into Action</p>
+              </div>
+            </div>
+
+            <!-- Slide 11 — Image -->
+            <div class="carousel-slide">
+              <img src="events/WhatsApp Image 2026-06-20 at 12.27.24 AM.jpeg"
+                   alt="H4H Team" loading="lazy" />
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">The Team</p>
+                <p class="text-base font-semibold">United by Purpose</p>
+              </div>
+            </div>
+
+            <!-- Slide 12 — Video 1 -->
+            <div class="carousel-slide">
+              <video
+                src="events/WhatsApp Video 2026-06-20 at 12.06.48 AM.mp4"
+                muted
+                loop
+                playsinline
+                class="carousel-video"
+                preload="none"
+              ></video>
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">📹 Video Highlight</p>
+                <p class="text-base font-semibold">Our Team in the Field</p>
+              </div>
+            </div>
+
+            <!-- Slide 13 — Video 2 -->
+            <div class="carousel-slide">
+              <video
+                src="events/WhatsApp Video 2026-06-20 at 12.23.02 AM.mp4"
+                muted
+                loop
+                playsinline
+                class="carousel-video"
+                preload="none"
+              ></video>
+              <div class="slide-caption">
+                <p class="text-xs uppercase tracking-widest mb-1" style="color:#D4848E;">📹 Full Coverage</p>
+                <p class="text-base font-semibold">Community Day Recap</p>
+              </div>
+            </div>
+
+          </div><!-- end .carousel-track -->
+        </div><!-- end .carousel-container -->
+
+        <!-- Nav Arrows — outside overflow, flanking -->
+        <button class="carousel-btn carousel-btn-prev" id="carousel-prev" aria-label="Previous slide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <button class="carousel-btn carousel-btn-next" id="carousel-next" aria-label="Next slide">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+
+        <!-- Dots -->
+        <div class="carousel-dots" id="carousel-dots"></div>
+
+        <!-- Slide counter -->
+        <p class="text-center text-xs mt-2" style="color:rgba(253,246,227,0.4); letter-spacing:0.05em;">
+          <span id="slide-current">1</span> / <span id="slide-total">13</span>
+        </p>
+
+      </div><!-- end .carousel-outer -->
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SCRUB SPACER 4
+  ======================================================== -->
+  <div id="scrub-spacer-4" style="height:40vh;display:flex;align-items:center;justify-content:center;position:relative;z-index:10;">
+    <div class="anim-fade-up" style="text-align:center;padding:0 1.5rem;display:flex;flex-direction:column;align-items:center;gap:1.25rem;">
+      <p data-i18n="spacer4_text" style="font-size:clamp(1rem,2.5vw,1.35rem);color:rgba(253,240,242,0.75);text-shadow:0 2px 16px rgba(0,0,0,0.6);max-width:520px;line-height:1.6;">
+        Join a team of students who believe that small actions, done consistently, change lives.
+      </p>
+      <a href="#get-involved" style="display:inline-flex;align-items:center;gap:0.5rem;background:linear-gradient(135deg,#B5606A,#D4848E);color:#fff;font-weight:700;font-size:0.85rem;padding:0.75rem 1.75rem;border-radius:9999px;text-decoration:none;box-shadow:0 4px 20px rgba(181,96,106,0.4);transition:transform 0.2s,box-shadow 0.2s;"
+         onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 6px 28px rgba(181,96,106,0.55)'"
+         onmouseout="this.style.transform='';this.style.boxShadow='0 4px 20px rgba(181,96,106,0.4)'">
+        <span data-i18n="spacer4_btn">⟡ Get Involved Today</span>
+      </a>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       SECTION 5 — GET INVOLVED
+  ======================================================== -->
+  <section id="get-involved" class="py-24 px-4">
+    <div class="section-inner w-full">
+      <div class="grid md:grid-cols-2 gap-16 items-start">
+
+        <!-- Left — CTA text -->
+        <div class="space-y-8">
+          <p class="section-eyebrow anim-fade-up" data-i18n="gi_eyebrow">Take Action</p>
+          <h2 class="section-title anim-fade-up" data-i18n="gi_title">
+            Ready to Make a<br/>
+            <span class="gradient-text">Difference?</span>
+          </h2>
+          <p class="text-base leading-relaxed anim-fade-up"
+             style="color:rgba(253,246,227,0.75); text-shadow:0 1px 8px rgba(0,0,0,0.6);" data-i18n="gi_sub">
+            Whether you want to volunteer at our next event, donate supplies, or simply spread the word —
+            every action matters. Join our growing family of compassionate students and let's build a
+            better community together.
+          </p>
+
+          <!-- Ways to help -->
+          <div class="space-y-4 anim-fade-up">
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">🙋</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way1_title">Volunteer</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way1_desc">
+                  Join us at our next field visit or donation drive.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">📦</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way2_title">Donate Supplies</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way2_desc">
+                  Drop off clothing, food, or essentials at our collection points on campus.
+                </p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">📢</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way3_title">Spread the Word</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way3_desc">
+                  Share our mission with friends, family, and your network.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Social links -->
+          <div class="space-y-3 anim-fade-up">
+            <p class="text-xs uppercase tracking-widest font-semibold" style="color:rgba(253,246,227,0.5);" data-i18n="gi_follow">
+              Follow Our Journey
+            </p>
+            <div class="flex gap-3">
+
+              <!-- Instagram -->
+              <a href="https://www.instagram.com/h4h.ksa?igsh=MW1jYmkwNzZpanJ5Mw==" target="_blank" rel="noopener"
+                 class="social-link" aria-label="Instagram" id="social-instagram">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+                  <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+                  <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+                </svg>
+              </a>
+
+
+              <!-- WhatsApp -->
+              <a href="https://wa.me/966509903051?text=Hello%20Hearts%20For%20Humanity!%20I%27d%20like%20to%20get%20involved%20and%20learn%20more%20about%20your%20upcoming%20events." target="_blank" rel="noopener"
+                 class="social-link" aria-label="WhatsApp" id="social-whatsapp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+                </svg>
+              </a>
+
+              <!-- YouTube -->
+              <a href="https://www.youtube.com/@h4hriyadhchapter" target="_blank" rel="noopener"
+                 class="social-link" aria-label="YouTube" id="social-youtube">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/>
+                  <polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/>
+                </svg>
+              </a>
+
+              <!-- Email -->
+              <a href="mailto:h4h@alfaisal.edu"
+                 class="social-link" aria-label="Email" id="social-email">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <polyline points="22,6 12,13 2,6"/>
+                </svg>
+              </a>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- Right — Sign-up form -->
+        <div class="glass-card p-8 space-y-6 anim-scale-in">
+          <h3 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;" data-i18n="gi_form_title">
+            Join the Team
+          </h3>
+          <p class="text-sm" style="color:rgba(253,246,227,0.6);" data-i18n="gi_form_sub">
+            Fill in your details and we'll reach out about upcoming events and volunteer opportunities.
+          </p>
+
+          <form id="join-form" class="space-y-5" onsubmit="handleFormSubmit(event)">
+            <!-- honeypot — bots fill this, humans don't see it -->
+            <input type="text" name="website" id="hp-field" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+
+            <div>
+              <label class="form-label" for="input-name" data-i18n="form_name">Full Name</label>
+              <input
+                id="input-name"
+                type="text"
+                class="form-input"
+                placeholder="e.g. Abdullah Al-Rashid"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="form-label" for="input-email" data-i18n="form_email">Email Address</label>
+              <input
+                id="input-email"
+                type="email"
+                class="form-input"
+                placeholder="yourname@alfaisal.edu"
+                required
+              />
+            </div>
+
+            <div>
+              <label class="form-label" for="input-phone" data-i18n="form_phone">Phone / WhatsApp</label>
+              <input
+                id="input-phone"
+                type="tel"
+                class="form-input"
+                placeholder="+966 5X XXX XXXX"
+              />
+            </div>
+
+            <div>
+              <label class="form-label" for="input-role" data-i18n="form_role">How Would You Like to Help?</label>
+              <select id="input-role" class="form-input" style="appearance: none; cursor:pointer;">
+                <option value="" disabled selected style="background:#1A080E;">Choose an option…</option>
+                <option value="volunteer" style="background:#1A080E;">Volunteer at Events</option>
+                <option value="donate" style="background:#1A080E;">Donate Supplies</option>
+                <option value="both" style="background:#1A080E;">Both — I'm All In!</option>
+                <option value="spread" style="background:#1A080E;">Spread Awareness</option>
+              </select>
+            </div>
+
+            <div>
+              <label class="form-label" for="input-message" data-i18n="form_msg">Message (Optional)</label>
+              <textarea
+                id="input-message"
+                class="form-input"
+                rows="3"
+                placeholder="Tell us about yourself or any questions you have…"
+                style="resize:vertical; min-height:80px;"
+              ></textarea>
+            </div>
+
+            <button
+              type="submit"
+              id="submit-btn"
+              class="cta-button w-full text-center"
+              style="border:none; cursor:pointer; font-size:0.9rem; padding: 1rem;"
+            >
+              <span id="submit-btn-text" data-i18n="form_submit">⟡ Join Hearts For Humanity</span>
+            </button>
+
+          </form>
+
+          <!-- Success message (hidden) -->
+          <div id="form-success" class="hidden text-center space-y-3 py-6">
+            <div class="text-5xl">🎉</div>
+            <p class="text-xl font-bold gradient-text" data-i18n="form_thanks">Thank You!</p>
+            <p class="text-sm" style="color:rgba(253,246,227,0.7);" data-i18n="form_thanks_sub">
+              We've received your sign-up. We'll be in touch soon about upcoming events.
+            </p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+
+  <!-- ========================================================
+       MISSION SECTION
+  ======================================================== -->
+  <section id="mission" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full">
+      <div class="glass-card p-12 md:p-16 text-center relative overflow-hidden anim-scale-in" style="max-width:800px;margin:0 auto;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(181,96,106,0.1),rgba(212,132,142,0.05));pointer-events:none;"></div>
+        <!-- Logo top left -->
+        <img src="logo2.png" alt="H4H" style="position:absolute;top:1.5rem;left:1.5rem;width:52px;height:52px;object-fit:contain;opacity:0.85;" />
+        <!-- Badge top right -->
+        <div style="position:absolute;top:1.25rem;right:1.25rem;background:linear-gradient(135deg,#B5606A,#D4848E);border-radius:0.75rem;padding:0.5rem 0.75rem;text-align:center;">
+          <span style="font-size:0.65rem;font-weight:900;color:#fff;letter-spacing:0.06em;display:block;">H4H</span>
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="white" style="margin:2px auto 0;display:block;"><path d="M12 21.593c-5.63-5.539-11-10.297-11-14.402 0-3.791 3.068-5.191 5.281-5.191 1.312 0 4.151.501 5.719 4.457 1.59-3.968 4.464-4.447 5.726-4.447 2.54 0 5.274 1.621 5.274 5.181 0 4.069-5.136 8.625-11 14.402z"/></svg>
+        </div>
+
+        <div class="relative" style="padding-top:1rem;">
+          <p data-i18n="mission_pre" style="font-size:clamp(1rem,2.5vw,1.15rem);font-family:'Playfair Display',serif;font-style:italic;color:#D4848E;margin-bottom:0.25rem;">What is our</p>
+          <h2 data-i18n="mission_heading" style="font-size:clamp(2.5rem,7vw,4.5rem);font-weight:900;font-family:'Playfair Display',serif;color:#FDF0F2;letter-spacing:-0.02em;line-height:1;margin-bottom:1.25rem;">MISSION?</h2>
+
+          <!-- Dots -->
+          <div style="display:flex;align-items:center;justify-content:center;gap:0.5rem;margin-bottom:2rem;">
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.5);"></div>
+            <div style="width:14px;height:14px;border-radius:50%;background:#B5606A;"></div>
+            <div style="width:14px;height:14px;border-radius:50%;background:#B5606A;"></div>
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.4);background:rgba(181,96,106,0.2);"></div>
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.5);"></div>
+          </div>
+
+          <p data-i18n="mission_body" style="font-size:clamp(0.95rem,2vw,1.1rem);line-height:1.8;color:rgba(253,240,242,0.82);max-width:600px;margin:0 auto 1.75rem;">
+            As a student-led initiative, we are dedicated to supporting those in need through donation drives, meal distribution, community outreach, and awareness campaigns. We prioritize a holistic approach to well-being in Saudi Arabia, ensuring that every person is treated with dignity and care.
+          </p>
+
+          <p data-i18n="mission_quote" style="font-size:clamp(0.95rem,1.8vw,1.05rem);font-family:'Playfair Display',serif;font-style:italic;color:#D4848E;line-height:1.7;">
+            'At H4H, our hearts and souls are fully<br/>committed to serving humanity!'
+          </p>
+
+          <!-- Bottom dots -->
+          <div style="display:flex;align-items:center;justify-content:flex-start;gap:0.5rem;margin-top:2rem;">
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.5);"></div>
+            <div style="width:14px;height:14px;border-radius:50%;background:#B5606A;"></div>
+            <div style="width:14px;height:14px;border-radius:50%;background:#B5606A;"></div>
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.4);background:rgba(181,96,106,0.2);"></div>
+            <div style="width:14px;height:14px;border-radius:50%;border:2px solid rgba(181,96,106,0.5);"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       TEAM SECTION — Stacked shuffleable cards (vaib215 style)
+  ======================================================== -->
+  <style>
+    .team-stack { position:relative; width:300px; height:400px; margin:0 auto; cursor:pointer; }
+    .team-card {
+      position:absolute; inset:0; border-radius:1.5rem; overflow:hidden;
+      background:rgba(30,10,16,0.85); border:1px solid rgba(181,96,106,0.3);
+      backdrop-filter:blur(12px); transition:transform 0.5s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.5s;
+      user-select:none;
+    }
+    .team-card img { width:100%; height:280px; object-fit:cover; object-position:top; display:block; }
+    .team-card .card-body { padding:1.1rem 1.25rem; }
+    .team-card .card-body h4 { font-size:1rem; font-weight:800; color:#FDF0F2; margin:0 0 0.25rem; }
+    .team-card .card-body p  { font-size:0.7rem; text-transform:uppercase; letter-spacing:0.1em; color:#D4848E; margin:0; }
+    .team-card[data-pos="0"] { transform:rotate(-6deg) translateY(12px); box-shadow:0 8px 40px rgba(0,0,0,0.5); z-index:1; }
+    .team-card[data-pos="1"] { transform:rotate(-2deg) translateY(6px);  box-shadow:0 6px 30px rgba(0,0,0,0.4); z-index:2; }
+    .team-card[data-pos="2"] { transform:rotate(2deg)  translateY(2px);  box-shadow:0 5px 24px rgba(0,0,0,0.35); z-index:3; }
+    .team-card[data-pos="3"] { transform:rotate(0deg)  translateY(0);    box-shadow:0 10px 50px rgba(181,96,106,0.25); z-index:4; border-color:rgba(181,96,106,0.55); }
+    .team-stack:hover .team-card[data-pos="3"] { box-shadow:0 16px 60px rgba(181,96,106,0.35); }
+    .shuffle-hint { text-align:center;margin-top:1.5rem;font-size:0.78rem;color:rgba(253,240,242,0.4);letter-spacing:0.06em; }
+  </style>
+
+  <section id="team" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full space-y-12">
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up" data-i18n="team_eyebrow">✦ The People Behind It ✦</p>
+        <h2 class="section-title anim-fade-up" data-i18n="team_title">Meet the <span class="gradient-text">Team</span></h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up" style="color:rgba(253,240,242,0.7);" data-i18n="team_sub">The passionate students making H4H happen on the ground every single day.</p>
+      </div>
+      <!-- Stacked shuffleable cards — loaded from Supabase, fallback to hardcoded -->
+      <div style="display:flex;flex-direction:column;align-items:center;" class="anim-scale-in">
+        <div class="team-stack" id="team-stack" onclick="shuffleTeam()">
+          <!-- Cards injected by JS -->
+        </div>
+        <p class="shuffle-hint" data-i18n="team_shuffle">👆 Click to shuffle cards</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       NEWS SECTION — loaded from Supabase
+  ======================================================== -->
+  <section id="news" style="display:none;position:relative;z-index:10;" class="py-24 px-4">
+    <div class="section-inner w-full space-y-12">
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up" data-i18n="news_eyebrow">✦ Latest Updates ✦</p>
+        <h2 class="section-title anim-fade-up" data-i18n="news_title">H4H <span class="gradient-text">News</span></h2>
+      </div>
+      <div id="news-cards-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:1.25rem;max-width:1100px;margin:0 auto;"></div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       GALLERY SECTION — Staggered image tiles (tonyzebastian style)
+  ======================================================== -->
+  <style>
+    .img-tiles-row { display:flex; align-items:flex-end; justify-content:center; gap:1rem; flex-wrap:wrap; margin-bottom:2rem; }
+    .img-tile {
+      border-radius:1.25rem; overflow:hidden; cursor:pointer;
+      transition:transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.45s;
+      box-shadow:0 6px 30px rgba(0,0,0,0.4);
+      flex-shrink:0;
+    }
+    .img-tile:nth-child(1) { width:200px; height:260px; transform:rotate(-5deg) translateY(20px); }
+    .img-tile:nth-child(2) { width:220px; height:300px; transform:rotate(0deg)  translateY(0); z-index:2; }
+    .img-tile:nth-child(3) { width:200px; height:260px; transform:rotate(5deg)  translateY(20px); }
+    .img-tile:hover        { transform:rotate(0deg) translateY(-10px) scale(1.04) !important; box-shadow:0 16px 50px rgba(181,96,106,0.4); z-index:5; }
+    .img-tile img          { width:100%; height:100%; object-fit:cover; display:block; }
+    .gallery-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(160px,1fr)); gap:0.75rem; max-width:1100px; margin:0 auto; }
+    .gallery-thumb { border-radius:0.875rem; overflow:hidden; cursor:pointer; aspect-ratio:1; }
+    .gallery-thumb img { width:100%; height:100%; object-fit:cover; display:block; transition:transform 0.35s; }
+    .gallery-thumb:hover img { transform:scale(1.07); }
+  </style>
+
+  <section id="gallery" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full space-y-12">
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up">✦ Captured Moments ✦</p>
+        <h2 class="section-title anim-fade-up">Our <span class="gradient-text">Gallery</span></h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up" style="color:rgba(253,240,242,0.7);">Real moments from the field — raw, honest, and full of heart.</p>
+      </div>
+
+      <!-- Featured 3 staggered tiles — loaded dynamically -->
+      <div class="img-tiles-row anim-fade-up" id="gallery-featured">
+        <div style="color:rgba(253,240,242,0.3);font-size:0.9rem;padding:2rem;text-align:center;grid-column:1/-1;">Loading…</div>
+      </div>
+
+      <!-- Rest of gallery in grid — loaded dynamically -->
+      <div class="gallery-grid anim-fade-up" id="gallery-grid-main"></div>
+      <div style="text-align:center;margin-top:2rem;">
+        <button id="gallery-load-more" onclick="window._galleryLoadMore && window._galleryLoadMore()" style="display:none;padding:0.6rem 2rem;background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.4);border-radius:2rem;color:#D4848E;font-size:0.9rem;cursor:pointer;transition:background 0.2s;" onmouseover="this.style.background='rgba(181,96,106,0.3)'" onmouseout="this.style.background='rgba(181,96,106,0.15)'">Load More Photos</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- Lightbox -->
+  <div id="lightbox" onclick="document.getElementById('lightbox').style.display='none'" style="display:none;position:fixed;inset:0;z-index:99999;background:rgba(0,0,0,0.92);align-items:center;justify-content:center;cursor:zoom-out;">
+    <img id="lightbox-img" src="" alt="" style="max-width:92vw;max-height:90vh;border-radius:0.75rem;box-shadow:0 8px 60px rgba(0,0,0,0.8);" />
+  </div>
+
+  <!-- ========================================================
+       TESTIMONIALS SECTION — Northstrix circular carousel style
+  ======================================================== -->
+  <style>
+    .circ-testimonials { position:relative; max-width:760px; margin:0 auto; }
+    .circ-track { overflow:hidden; border-radius:2rem; }
+    .circ-slide {
+      display:none;
+      padding:3rem 3.5rem;
+      background:rgba(181,96,106,0.08);
+      border:1px solid rgba(181,96,106,0.2);
+      backdrop-filter:blur(20px);
+      border-radius:2rem;
+      text-align:center;
+      animation:fadeSlide 0.5s ease;
+    }
+    .circ-slide.active { display:block; }
+    @keyframes fadeSlide { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .circ-quote { font-size:4rem; line-height:1; color:#B5606A; font-family:Georgia,serif; opacity:0.35; margin-bottom:0.5rem; }
+    .circ-text { font-size:1.05rem; line-height:1.8; color:rgba(253,240,242,0.82); margin-bottom:2rem; font-style:italic; }
+    .circ-avatar {
+      width:64px; height:64px; border-radius:50%;
+      background:linear-gradient(135deg,#B5606A,#D4848E);
+      display:flex;align-items:center;justify-content:center;
+      font-weight:800;font-size:1.4rem;color:#fff;
+      margin:0 auto 0.75rem;
+      box-shadow:0 0 0 4px rgba(181,96,106,0.25);
+    }
+    .circ-name { font-weight:800; font-size:1rem; color:#FDF0F2; }
+    .circ-role { font-size:0.78rem; color:#D4848E; margin-top:0.2rem; }
+    .circ-nav { display:flex; align-items:center; justify-content:center; gap:1.5rem; margin-top:1.5rem; }
+    .circ-btn {
+      width:44px;height:44px;border-radius:50%;
+      background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);
+      color:#FDF0F2;font-size:1.2rem;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;
+      transition:background 0.25s,transform 0.2s;
+    }
+    .circ-btn:hover { background:rgba(181,96,106,0.4); transform:scale(1.08); }
+    .circ-dots { display:flex; gap:0.5rem; }
+    .circ-dot { width:8px;height:8px;border-radius:50%;background:rgba(181,96,106,0.3);cursor:pointer;transition:background 0.3s,transform 0.3s; }
+    .circ-dot.active { background:#B5606A;transform:scale(1.4); }
+  </style>
+
+  <section id="testimonials" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full space-y-12">
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up">✦ Voices ✦</p>
+        <h2 class="section-title anim-fade-up">What Our <span class="gradient-text">Volunteers Say</span></h2>
+      </div>
+
+      <div class="circ-testimonials anim-fade-up">
+        <div class="circ-track">
+          <div class="circ-slide active">
+            <div class="circ-quote">"</div>
+            <p class="circ-text">Volunteering with H4H changed my perspective completely. Seeing the gratitude in people's eyes after a meal distribution was something I'll carry with me forever.</p>
+            <div class="circ-avatar">S</div>
+            <div class="circ-name">Sara A.</div>
+            <div class="circ-role">Volunteer, 2025</div>
+          </div>
+          <div class="circ-slide">
+            <div class="circ-quote">"</div>
+            <p class="circ-text">I joined H4H not knowing what to expect. Three months later, I'm a core organizer. The team is incredible and the impact we make together is real and visible.</p>
+            <div class="circ-avatar">F</div>
+            <div class="circ-name">Fahad M.</div>
+            <div class="circ-role">Core Organizer, 2025</div>
+          </div>
+          <div class="circ-slide">
+            <div class="circ-quote">"</div>
+            <p class="circ-text">H4H showed me that making a difference doesn't require resources — it requires heart. Every drive, every event reminds me why I chose Alfaisal University.</p>
+            <div class="circ-avatar">L</div>
+            <div class="circ-name">Layan K.</div>
+            <div class="circ-role">Volunteer, 2026</div>
+          </div>
+          <div class="circ-slide">
+            <div class="circ-quote">"</div>
+            <p class="circ-text">The sense of community at H4H is unmatched. From blood drives to food distributions, every initiative is organized with care and passion. Proud to be a member.</p>
+            <div class="circ-avatar">N</div>
+            <div class="circ-name">Nour H.</div>
+            <div class="circ-role">Member, 2026</div>
+          </div>
+        </div>
+        <div class="circ-nav">
+          <button class="circ-btn" onclick="circPrev()">&#8592;</button>
+          <div class="circ-dots" id="circ-dots"></div>
+          <button class="circ-btn" onclick="circNext()">&#8594;</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       NEWSLETTER SECTION
+  ======================================================== -->
+  <section id="newsletter" class="py-20 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full">
+      <div class="glass-card p-10 md:p-14 text-center anim-scale-in" style="max-width:680px;margin:0 auto;position:relative;overflow:hidden;">
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg,rgba(181,96,106,0.1),rgba(212,132,142,0.05));pointer-events:none;"></div>
+        <div class="relative">
+          <div style="font-size:2.5rem;margin-bottom:1rem;">💌</div>
+          <p class="section-eyebrow" style="margin-bottom:0.75rem;">Stay Updated</p>
+          <h2 style="font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;font-family:'Playfair Display',serif;color:#FDF0F2;margin-bottom:0.75rem;">
+            Never Miss an <span class="gradient-text">Event</span>
+          </h2>
+          <p style="color:rgba(253,240,242,0.65);font-size:0.9rem;margin-bottom:2rem;line-height:1.6;">
+            Subscribe to get notified about upcoming drives, field visits, and volunteer opportunities straight to your inbox.
+          </p>
+          <form id="newsletter-form" onsubmit="handleNewsletter(event)" style="display:flex;gap:0.75rem;max-width:440px;margin:0 auto;flex-wrap:wrap;">
+            <input
+              type="email"
+              id="newsletter-email"
+              placeholder="yourname@alfaisal.edu"
+              required
+              style="flex:1;min-width:200px;background:rgba(255,255,255,0.07);border:1px solid rgba(181,96,106,0.35);border-radius:9999px;padding:0.8rem 1.25rem;color:#FDF0F2;font-size:0.88rem;outline:none;transition:border-color 0.2s;"
+              onfocus="this.style.borderColor='#B5606A'"
+              onblur="this.style.borderColor='rgba(181,96,106,0.35)'"
+            />
+            <button type="submit" class="cta-button" style="padding:0.8rem 1.5rem;font-size:0.85rem;border:none;cursor:pointer;white-space:nowrap;">
+              Subscribe ✦
+            </button>
+          </form>
+          <div id="newsletter-success" style="display:none;margin-top:1.25rem;color:#6ee89a;font-size:0.88rem;font-weight:600;">
+            🎉 You're subscribed! We'll keep you in the loop.
+          </div>
+          <p style="margin-top:1rem;font-size:0.72rem;color:rgba(253,240,242,0.35);">No spam. Unsubscribe anytime.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       SUBTEAMS SECTION
+  ======================================================== -->
+  <section id="subteams" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full space-y-12">
+      <div class="text-center space-y-4">
+        <p class="section-eyebrow anim-fade-up">✦ Inside H4H ✦</p>
+        <h2 class="section-title anim-fade-up">Our <span class="gradient-text">Subteams</span></h2>
+        <p class="text-base max-w-lg mx-auto anim-fade-up" style="color:rgba(253,240,242,0.65);">Six specialized departments, one shared mission. Each plays a unique role in making H4H work.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem;max-width:1200px;margin:0 auto;">
+
+        <a href="pr.html" style="text-decoration:none;" class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:rgba(253,240,242,0.04);border:1px solid rgba(181,96,106,0.18);border-radius:1.5rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;cursor:pointer;height:100%;"
+            onmouseover="this.style.borderColor='rgba(181,96,106,0.5)';this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(181,96,106,0.15)'"
+            onmouseout="this.style.borderColor='rgba(181,96,106,0.18)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">📢</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">Public Relations</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">Social media, design, photography, and the voice of H4H to the outside world.</p>
+            <span style="font-size:0.82rem;color:#D4848E;font-weight:600;letter-spacing:0.05em;">View Team →</span>
+          </div>
+        </a>
+
+        <a href="organizing.html" style="text-decoration:none;" class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:rgba(253,240,242,0.04);border:1px solid rgba(181,96,106,0.18);border-radius:1.5rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;cursor:pointer;height:100%;"
+            onmouseover="this.style.borderColor='rgba(181,96,106,0.5)';this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(181,96,106,0.15)'"
+            onmouseout="this.style.borderColor='rgba(181,96,106,0.18)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">📋</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">Organizing</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">Event planning, logistics, volunteer coordination, and making sure everything runs flawlessly.</p>
+            <span style="font-size:0.82rem;color:#D4848E;font-weight:600;letter-spacing:0.05em;">View Team →</span>
+          </div>
+        </a>
+
+        <a href="outreach.html" style="text-decoration:none;" class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:rgba(253,240,242,0.04);border:1px solid rgba(181,96,106,0.18);border-radius:1.5rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;cursor:pointer;height:100%;"
+            onmouseover="this.style.borderColor='rgba(181,96,106,0.5)';this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(181,96,106,0.15)'"
+            onmouseout="this.style.borderColor='rgba(181,96,106,0.18)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">🤝</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">Outreach</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">Finding beneficiaries, building partnerships, and expanding H4H's reach into the community.</p>
+            <span style="font-size:0.82rem;color:#D4848E;font-weight:600;letter-spacing:0.05em;">View Team →</span>
+          </div>
+        </a>
+
+        <a href="content.html" style="text-decoration:none;" class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:rgba(253,240,242,0.04);border:1px solid rgba(181,96,106,0.18);border-radius:1.5rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;cursor:pointer;height:100%;"
+            onmouseover="this.style.borderColor='rgba(181,96,106,0.5)';this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(181,96,106,0.15)'"
+            onmouseout="this.style.borderColor='rgba(181,96,106,0.18)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">📝</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">Content</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">Creating medical guidelines, volunteer instructions, and educational materials for every initiative.</p>
+            <span style="font-size:0.82rem;color:#D4848E;font-weight:600;letter-spacing:0.05em;">View Team →</span>
+          </div>
+        </a>
+
+        <a href="volunteering.html" style="text-decoration:none;" class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:rgba(253,240,242,0.04);border:1px solid rgba(181,96,106,0.18);border-radius:1.5rem;transition:border-color 0.3s,transform 0.3s,box-shadow 0.3s;cursor:pointer;height:100%;"
+            onmouseover="this.style.borderColor='rgba(181,96,106,0.5)';this.style.transform='translateY(-6px)';this.style.boxShadow='0 16px 40px rgba(181,96,106,0.15)'"
+            onmouseout="this.style.borderColor='rgba(181,96,106,0.18)';this.style.transform='translateY(0)';this.style.boxShadow='none'">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">🙋</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">Volunteering</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">Managing our volunteer community — recruitment, onboarding, and keeping our people engaged and motivated.</p>
+            <span style="font-size:0.82rem;color:#D4848E;font-weight:600;letter-spacing:0.05em;">View Team →</span>
+          </div>
+        </a>
+
+        <!-- The Board -->
+        <div class="anim-fade-up">
+          <div style="padding:2.5rem 2rem;background:linear-gradient(135deg,rgba(181,96,106,0.12),rgba(212,132,142,0.06));border:1px solid rgba(181,96,106,0.35);border-radius:1.5rem;height:100%;">
+            <div style="font-size:2.5rem;margin-bottom:1.25rem;">👑</div>
+            <h3 style="font-family:'Playfair Display',serif;font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.6rem;">The Board</h3>
+            <p style="font-size:0.85rem;color:rgba(253,240,242,0.6);line-height:1.7;margin-bottom:1.5rem;">President, Vice President, and Secretary — providing vision, direction, and leadership across all H4H departments.</p>
+            <div style="display:flex;flex-wrap:wrap;gap:0.5rem;">
+              <span style="font-size:0.72rem;padding:0.2rem 0.65rem;background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);border-radius:2rem;color:#D4848E;">Noor Elabd · President</span>
+              <span style="font-size:0.72rem;padding:0.2rem 0.65rem;background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);border-radius:2rem;color:#D4848E;">Belal Afify · VP</span>
+              <span style="font-size:0.72rem;padding:0.2rem 0.65rem;background:rgba(181,96,106,0.15);border:1px solid rgba(181,96,106,0.3);border-radius:2rem;color:#D4848E;">Cristella Rafeh · Secretary</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       GET INVOLVED — Last Section
+  ======================================================== -->
+  <section id="get-involved-last" class="py-24 px-4" style="position:relative;z-index:10;">
+    <div class="section-inner w-full">
+      <div class="grid md:grid-cols-2 gap-16 items-start">
+
+        <!-- Left — CTA text -->
+        <div class="space-y-8">
+          <p class="section-eyebrow anim-fade-up" data-i18n="gi_eyebrow">Take Action</p>
+          <h2 class="section-title anim-fade-up" data-i18n="gi_title">
+            Ready to Make a<br/>
+            <span class="gradient-text">Difference?</span>
+          </h2>
+          <p class="text-base leading-relaxed anim-fade-up"
+             style="color:rgba(253,246,227,0.75);" data-i18n="gi_sub">
+            Whether you want to volunteer at our next event, donate supplies, or simply spread the word —
+            every action matters. Join our growing family of compassionate students and let's build a
+            better community together.
+          </p>
+          <div class="space-y-4 anim-fade-up">
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">🙋</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way1_title">Volunteer</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way1_desc">Join us at our next field visit or donation drive.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">📦</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way2_title">Donate Supplies</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way2_desc">Drop off clothing, food, or essentials at our collection points on campus.</p>
+              </div>
+            </div>
+            <div class="flex items-start gap-4 glass-card-light p-4">
+              <span class="text-2xl mt-0.5">📢</span>
+              <div>
+                <p class="font-semibold text-sm mb-1" data-i18n="gi_way3_title">Spread the Word</p>
+                <p class="text-xs" style="color:rgba(253,246,227,0.6);" data-i18n="gi_way3_desc">Share our mission with friends, family, and your network.</p>
+              </div>
+            </div>
+          </div>
+          <div class="space-y-3 anim-fade-up">
+            <p class="text-xs uppercase tracking-widest font-semibold" style="color:rgba(253,246,227,0.5);" data-i18n="gi_follow">Follow Our Journey</p>
+            <div class="flex gap-3">
+              <a href="https://www.instagram.com/h4h.ksa?igsh=MW1jYmkwNzZpanJ5Mw==" target="_blank" class="social-link" aria-label="Instagram">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"/><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/></svg>
+              </a>
+              <a href="https://wa.me/966509903051?text=Hello%20Hearts%20For%20Humanity!%20I%27d%20like%20to%20get%20involved." target="_blank" class="social-link" aria-label="WhatsApp">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+              </a>
+              <a href="https://www.youtube.com/@h4hriyadhchapter" target="_blank" class="social-link" aria-label="YouTube">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M22.54 6.42a2.78 2.78 0 0 0-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46A2.78 2.78 0 0 0 1.46 6.42 29 29 0 0 0 1 12a29 29 0 0 0 .46 5.58 2.78 2.78 0 0 0 1.95 1.96C5.12 20 12 20 12 20s6.88 0 8.59-.46a2.78 2.78 0 0 0 1.95-1.96A29 29 0 0 0 23 12a29 29 0 0 0-.46-5.58z"/><polygon points="9.75 15.02 15.5 12 9.75 8.98 9.75 15.02"/></svg>
+              </a>
+              <a href="mailto:h4h@alfaisal.edu" class="social-link" aria-label="Email">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+              </a>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right — Sign-up form -->
+        <div class="glass-card p-8 space-y-6 anim-scale-in">
+          <h3 class="text-2xl font-bold" style="font-family:'Playfair Display',serif;" data-i18n="gi_form_title">Join the Team</h3>
+          <p class="text-sm" style="color:rgba(253,246,227,0.6);" data-i18n="gi_form_sub">Fill in your details and we'll reach out about upcoming events and volunteer opportunities.</p>
+          <form id="join-form-last" class="space-y-5" onsubmit="handleFormSubmit(event)">
+            <!-- honeypot -->
+            <input type="text" name="website" id="hp-field2" autocomplete="off" tabindex="-1" style="position:absolute;left:-9999px;width:1px;height:1px;opacity:0;" />
+
+            <div>
+              <label class="form-label" for="input-name2" data-i18n="form_name">Full Name</label>
+              <input id="input-name2" type="text" class="form-input" placeholder="e.g. Abdullah Al-Rashid" required />
+            </div>
+            <div>
+              <label class="form-label" for="input-email2" data-i18n="form_email">Email Address</label>
+              <input id="input-email2" type="email" class="form-input" placeholder="yourname@alfaisal.edu" required />
+            </div>
+            <div>
+              <label class="form-label" for="input-phone2" data-i18n="form_phone">Phone / WhatsApp</label>
+              <input id="input-phone2" type="tel" class="form-input" placeholder="+966 5X XXX XXXX" />
+            </div>
+            <div>
+              <label class="form-label" for="input-role2" data-i18n="form_role">How Would You Like to Help?</label>
+              <select id="input-role2" class="form-input" style="appearance:none;cursor:pointer;">
+                <option value="" disabled selected style="background:#1A080E;">Choose an option…</option>
+                <option value="volunteer" style="background:#1A080E;">Volunteer at Events</option>
+                <option value="donate" style="background:#1A080E;">Donate Supplies</option>
+                <option value="both" style="background:#1A080E;">Both — I'm All In!</option>
+                <option value="spread" style="background:#1A080E;">Spread Awareness</option>
+              </select>
+            </div>
+            <div>
+              <label class="form-label" for="input-message2" data-i18n="form_msg">Message (Optional)</label>
+              <textarea id="input-message2" class="form-input" rows="3" placeholder="Tell us about yourself or any questions you have…" style="resize:vertical;min-height:80px;"></textarea>
+            </div>
+            <button type="submit" class="cta-button w-full text-center" style="border:none;cursor:pointer;font-size:0.9rem;padding:1rem;">
+              <span data-i18n="form_submit">⟡ Join Hearts For Humanity</span>
+            </button>
+          </form>
+          <div id="form-success-last" class="hidden text-center space-y-3 py-6">
+            <div class="text-5xl">🎉</div>
+            <p class="text-xl font-bold gradient-text" data-i18n="form_thanks">Thank You!</p>
+            <p class="text-sm" style="color:rgba(253,246,227,0.7);" data-i18n="form_thanks_sub">We've received your sign-up. We'll be in touch soon about upcoming events.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+</div><!-- end #main-content -->
+
+<!-- ============================================================
+     FOOTER
+============================================================ -->
+<footer class="py-10 px-8 relative z-20">
+  <div class="max-w-6xl mx-auto">
+    <div class="flex flex-col md:flex-row items-center justify-between gap-6">
+
+      <!-- Brand -->
+      <div class="flex items-center gap-3">
+        <img src="logo2.png" alt="H4H Logo" style="width:44px;height:44px;border-radius:10px;object-fit:contain;flex-shrink:0;" />
+        <div>
+          <p class="font-bold text-sm" style="color:#FDF0F2;">Hearts For Humanity</p>
+          <p class="text-xs" style="color:rgba(253,246,227,0.5);">Alfaisal University, Riyadh</p>
+        </div>
+      </div>
+
+      <!-- Links -->
+      <div class="flex items-center gap-6 text-xs" style="color:rgba(253,246,227,0.5);">
+        <a href="#hero" class="hover:text-amber-400 transition-colors">Home</a>
+        <a href="#about" class="hover:text-amber-400 transition-colors">About</a>
+        <a href="#events" class="hover:text-amber-400 transition-colors">Events</a>
+        <a href="#team" class="hover:text-amber-400 transition-colors">Team</a>
+        <a href="#news" class="hover:text-amber-400 transition-colors">News</a>
+        <a href="#gallery" class="hover:text-amber-400 transition-colors">Gallery</a>
+        <a href="#get-involved" class="hover:text-amber-400 transition-colors">Get Involved</a>
+      </div>
+
+      <!-- Copyright -->
+      <p class="text-xs text-center md:text-right" style="color:rgba(253,246,227,0.35);">
+        © 2026 Hearts For Humanity — Alfaisal University.<br/>
+        Independent student initiative. All rights reserved.
+      </p>
+
+    </div>
+  </div>
+</footer>
+
+<!-- ============================================================
+     WHATSAPP FLOATING BUTTON
+============================================================ -->
+<a href="https://wa.me/966509903051?text=Hello%20Hearts%20For%20Humanity!%20I%20want%20to%20get%20in%20touch."
+   target="_blank" rel="noopener noreferrer"
+   id="whatsapp-fab"
+   aria-label="Chat on WhatsApp"
+   style="
+     position: fixed;
+     bottom: 1.75rem;
+     right: 1.75rem;
+     z-index: 9999;
+     width: 58px;
+     height: 58px;
+     border-radius: 50%;
+     background: #25D366;
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     box-shadow: 0 4px 20px rgba(37,211,102,0.45);
+     transition: transform 0.25s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.25s;
+     text-decoration: none;
+   "
+   onmouseover="this.style.transform='scale(1.12)';this.style.boxShadow='0 6px 28px rgba(37,211,102,0.6)'"
+   onmouseout="this.style.transform='scale(1)';this.style.boxShadow='0 4px 20px rgba(37,211,102,0.45)'"
+>
+  <svg width="30" height="30" viewBox="0 0 32 32" fill="white" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 2C8.268 2 2 8.268 2 16c0 2.52.698 4.875 1.91 6.885L2 30l7.31-1.875A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.826-1.594l-.418-.248-4.332 1.112 1.14-4.198-.274-.432A11.46 11.46 0 014.5 16C4.5 9.648 9.648 4.5 16 4.5S27.5 9.648 27.5 16 22.352 27.5 16 27.5zm6.29-8.618c-.344-.172-2.036-1.004-2.352-1.118-.316-.114-.546-.172-.776.172-.23.344-.89 1.118-1.09 1.348-.2.23-.4.258-.744.086-.344-.172-1.452-.536-2.766-1.708-1.022-.912-1.712-2.038-1.912-2.382-.2-.344-.022-.53.15-.702.156-.154.344-.402.516-.602.172-.2.23-.344.344-.574.114-.23.058-.43-.028-.602-.086-.172-.776-1.872-1.064-2.562-.28-.672-.564-.58-.776-.59l-.66-.012c-.23 0-.602.086-.918.43-.316.344-1.204 1.176-1.204 2.868s1.232 3.326 1.404 3.556c.172.23 2.426 3.706 5.878 5.196.822.354 1.462.566 1.962.724.824.262 1.574.226 2.166.138.66-.1 2.036-.832 2.322-1.634.286-.802.286-1.49.2-1.634-.086-.144-.316-.23-.66-.402z"/>
+  </svg>
+</a>
+
+<!-- Donate via WhatsApp modal trigger -->
+<div id="donate-modal" style="display:none;position:fixed;inset:0;z-index:10000;background:rgba(18,6,10,0.85);backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:1.5rem;">
+  <div style="background:linear-gradient(135deg,rgba(40,12,18,0.98),rgba(28,8,14,0.98));border:1px solid rgba(181,96,106,0.35);border-radius:1.5rem;padding:2.5rem 2rem;max-width:420px;width:100%;text-align:center;position:relative;">
+    <button onclick="document.getElementById('donate-modal').style.display='none'" style="position:absolute;top:1rem;right:1rem;background:none;border:none;color:rgba(253,240,242,0.4);font-size:1.4rem;cursor:pointer;line-height:1;">✕</button>
+    <div style="font-size:2.5rem;margin-bottom:1rem;">🤍</div>
+    <h3 style="font-size:1.4rem;font-weight:800;color:#FDF0F2;margin-bottom:0.75rem;">Support Our Cause</h3>
+    <p style="color:rgba(253,240,242,0.65);font-size:0.9rem;line-height:1.6;margin-bottom:1.75rem;">
+      Your donation helps us serve more meals, run more drives, and reach more people in need across Saudi Arabia.
+    </p>
+    <a href="https://wa.me/966509903051?text=Hello%20H4H!%20I%20would%20like%20to%20make%20a%20donation.%20Please%20guide%20me%20on%20how%20to%20proceed."
+       target="_blank" rel="noopener noreferrer"
+       onclick="document.getElementById('donate-modal').style.display='none'"
+       style="display:inline-flex;align-items:center;gap:0.6rem;background:#25D366;color:#fff;font-weight:700;font-size:0.95rem;padding:0.9rem 2rem;border-radius:9999px;text-decoration:none;box-shadow:0 4px 18px rgba(37,211,102,0.35);transition:opacity 0.2s;"
+       onmouseover="this.style.opacity='0.88'"
+       onmouseout="this.style.opacity='1'"
+    >
+      <svg width="20" height="20" viewBox="0 0 32 32" fill="white"><path d="M16 2C8.268 2 2 8.268 2 16c0 2.52.698 4.875 1.91 6.885L2 30l7.31-1.875A13.94 13.94 0 0016 30c7.732 0 14-6.268 14-14S23.732 2 16 2zm0 25.5a11.44 11.44 0 01-5.826-1.594l-.418-.248-4.332 1.112 1.14-4.198-.274-.432A11.46 11.46 0 014.5 16C4.5 9.648 9.648 4.5 16 4.5S27.5 9.648 27.5 16 22.352 27.5 16 27.5zm6.29-8.618c-.344-.172-2.036-1.004-2.352-1.118-.316-.114-.546-.172-.776.172-.23.344-.89 1.118-1.09 1.348-.2.23-.4.258-.744.086-.344-.172-1.452-.536-2.766-1.708-1.022-.912-1.712-2.038-1.912-2.382-.2-.344-.022-.53.15-.702.156-.154.344-.402.516-.602.172-.2.23-.344.344-.574.114-.23.058-.43-.028-.602-.086-.172-.776-1.872-1.064-2.562-.28-.672-.564-.58-.776-.59l-.66-.012c-.23 0-.602.086-.918.43-.316.344-1.204 1.176-1.204 2.868s1.232 3.326 1.404 3.556c.172.23 2.426 3.706 5.878 5.196.822.354 1.462.566 1.962.724.824.262 1.574.226 2.166.138.66-.1 2.036-.832 2.322-1.634.286-.802.286-1.49.2-1.634-.086-.144-.316-.23-.66-.402z"/></svg>
+      Donate via WhatsApp
+    </a>
+    <p style="margin-top:1.25rem;font-size:0.78rem;color:rgba(253,240,242,0.35);">We'll respond with bank transfer details or other options.</p>
+  </div>
+</div>
+
+<!-- ============================================================
+     JAVASCRIPT
+============================================================ -->
+<script>
+(function () {
+  'use strict';
+
+  // ──────────────────────────────────────────────────────────────
+  // 1. REGISTER GSAP PLUGIN
+  // ──────────────────────────────────────────────────────────────
+  gsap.registerPlugin(ScrollTrigger);
+
+  // ──────────────────────────────────────────────────────────────
+  // 2. ELEMENTS
+  // ──────────────────────────────────────────────────────────────
+  const canvas  = document.getElementById('bg-canvas');
+  const ctx     = canvas.getContext('2d');
+  const navbar  = document.getElementById('navbar');
+
+  // ──────────────────────────────────────────────────────────────
+  // 3. IMAGE SEQUENCE SCRUB ENGINE
+  // ──────────────────────────────────────────────────────────────
+  const TOTAL_FRAMES = 271;
+  const framePrefix  = 'frames/ezgif-frame-';
+
+  // ── Canvas sizing: cap DPR at 1 on mobile to save GPU memory ──
+  const DPR = Math.min(window.devicePixelRatio || 1, window.innerWidth < 768 ? 1 : 2);
+
+  function resizeCanvas() {
+    // Physical pixel size = fills every real pixel on HiDPI screens
+    canvas.width        = window.innerWidth  * DPR;
+    canvas.height       = window.innerHeight * DPR;
+    // CSS size = screen size (browser handles DPR display scaling)
+    canvas.style.width  = '100%';
+    canvas.style.height = '100%';
+    // NO ctx.scale() — we draw directly in physical pixels
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'high';
+    if (drawnImg) drawFrame(drawnImg);
+  }
+  window.addEventListener('resize', resizeCanvas, { passive: true });
+
+  // Cover-fit draw — all coordinates in PHYSICAL pixels (canvas.width/height)
+  function drawFrame(img) {
+    if (!img || !img.naturalWidth) return;
+    const cw = canvas.width;    // physical px
+    const ch = canvas.height;   // physical px
+    const iw = img.naturalWidth;
+    const ih = img.naturalHeight;
+    const scale = Math.max(cw / iw, ch / ih);
+    const sw = iw * scale;
+    const sh = ih * scale;
+    ctx.clearRect(0, 0, cw, ch);
+    ctx.drawImage(img, (cw - sw) / 2, (ch - sh) / 2, sw, sh);
+  }
+
+  // ── State ──
+  const frames       = new Array(TOTAL_FRAMES);
+  let   loadedCount  = 0;
+  let   targetFrame  = 0;
+  let   drawnImg     = null;   // last successfully drawn image
+  let   displayFloat = 0;      // lerped frame index
+  let   needsDraw    = false;  // dirty flag — only draw when something changed
+
+  // Loader
+  const siteLoader = document.getElementById('site-loader');
+  const loaderText = document.querySelector('.loader-text');
+  function hideLoader() {
+    if (!siteLoader) return;
+    siteLoader.style.opacity = '0';
+    setTimeout(() => { siteLoader.style.display = 'none'; }, 700);
+  }
+
+  // ── Staggered loading — batches of 20 with decode() off main thread ──
+  // Priority: load frame 0 immediately, then batch the rest.
+  // decode() ensures the browser finishes JPEG decoding before we use the image,
+  // preventing jank when drawImage is called on an undecoded frame.
+  const BATCH   = 10;
+  const BATCH_MS = 50;
+
+  function loadFrame(i) {
+    const img = new Image();
+    const num = String(i + 1).padStart(3, '0');
+    frames[i] = img;
+
+    function onReady() {
+      loadedCount++;
+      if (loaderText) loaderText.textContent = `Loading… ${Math.round(loadedCount / TOTAL_FRAMES * 100)}%`;
+      if (i === 0) { resizeCanvas(); drawnImg = img; drawFrame(img); }
+      if (loadedCount === 1) hideLoader();
+      needsDraw = true;
+    }
+
+    img.onload = onReady;
+    img.onerror = () => {};
+    img.src = `${framePrefix}${num}.jpg`;
+    if (img.complete && img.naturalWidth) onReady();
+  }
+
+  // Size the canvas immediately — don't wait for frames
+  resizeCanvas();
+
+  // Fallback: force-hide loader after 3s even if frames_webp is missing
+  setTimeout(hideLoader, 3000);
+
+  // Load frame 0 first, then batch the rest
+  loadFrame(0);
+  let batchStart = 1;
+  function loadNextBatch() {
+    const end = Math.min(batchStart + BATCH, TOTAL_FRAMES);
+    for (let i = batchStart; i < end; i++) loadFrame(i);
+    batchStart = end;
+    if (batchStart < TOTAL_FRAMES) setTimeout(loadNextBatch, BATCH_MS);
+  }
+  setTimeout(loadNextBatch, 50);
+
+  // ── RAF render loop ──
+  // Only runs drawFrame when: (a) frame changed AND (b) new image is decoded
+  (function renderLoop() {
+    requestAnimationFrame(renderLoop);
+    const diff = targetFrame - displayFloat;
+    if (Math.abs(diff) < 0.05) return; // settled — skip draw
+
+    displayFloat += diff * 0.25; // faster lerp = more responsive on slow devices
+
+    const idx = Math.max(0, Math.min(Math.round(displayFloat), TOTAL_FRAMES - 1));
+    const img = frames[idx];
+    if (img && img.complete && img.naturalWidth && img !== drawnImg) {
+      drawnImg = img;
+      drawFrame(img);
+    }
+  })();
+
+  // ──────────────────────────────────────────────────────────────
+  // 4. SCROLLTRIGGER — maps scroll progress → frame index
+  // ──────────────────────────────────────────────────────────────
+  ScrollTrigger.create({
+    trigger: '#main-content',
+    start: 'top top',
+    end: 'bottom bottom',
+    onUpdate(self) {
+      targetFrame = self.progress * (TOTAL_FRAMES - 1);
+    }
+  });
+
+  // ──────────────────────────────────────────────────────────────
+  // 8. NAVBAR SCROLL EFFECT
+  // ──────────────────────────────────────────────────────────────
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 80) {
+      navbar.classList.add('scrolled');
+    } else {
+      navbar.classList.remove('scrolled');
+    }
+  }, { passive: true });
+
+  // ──────────────────────────────────────────────────────────────
+  // 9. GSAP ENTRANCE ANIMATIONS (scroll-triggered reveal)
+  // ──────────────────────────────────────────────────────────────
+  // Hero (on load)
+  gsap.to('.hero-title.anim-fade-up', {
+    opacity: 1, y: 0, duration: 1.2, ease: 'power3.out', delay: 0.3
+  });
+
+  document.querySelectorAll('#hero .anim-fade-up').forEach((el, i) => {
+    gsap.to(el, {
+      opacity: 1, y: 0,
+      duration: 1,
+      ease: 'power3.out',
+      delay: 0.2 + i * 0.15
+    });
+  });
+
+  document.querySelectorAll('#hero .anim-fade-in').forEach((el, i) => {
+    gsap.to(el, {
+      opacity: 1,
+      duration: 1,
+      ease: 'power2.out',
+      delay: 0.1 + i * 0.1
+    });
+  });
+
+  // Scroll-triggered animations for other sections
+  function scrollReveal(selector, props, stagger = 0) {
+    document.querySelectorAll(selector).forEach((el) => {
+      if (el.closest('#hero')) return;
+      const siblings = el.parentElement.querySelectorAll(selector);
+      const localIndex = [...siblings].indexOf(el);
+      const delay = Math.min(localIndex * stagger, 0.3); // cap at 0.3s max
+      ScrollTrigger.create({
+        trigger: el,
+        start: 'top 98%',
+        onEnter: () => {
+          gsap.to(el, {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 0.45,
+            delay,
+            ease: 'power2.out',
+            ...props
+          });
+        },
+        once: true
+      });
+    });
+  }
+
+  scrollReveal('.anim-fade-up', { y: 0, opacity: 1 }, 0.1);
+  scrollReveal('.anim-fade-in', { opacity: 1 }, 0.05);
+  scrollReveal('.anim-scale-in', { scale: 1, opacity: 1 }, 0.08);
+
+  // ──────────────────────────────────────────────────────────────
+  // 10. CAROUSEL LOGIC
+  // ──────────────────────────────────────────────────────────────
+  const track    = document.getElementById('carousel-track');
+  const dotsEl   = document.getElementById('carousel-dots');
+  const btnPrev  = document.getElementById('carousel-prev');
+  const btnNext  = document.getElementById('carousel-next');
+  const slides   = Array.from(track.querySelectorAll('.carousel-slide'));
+  const total    = slides.length;
+  let current    = 0;
+
+  // How many cards visible at once, based on screen width
+  function perView() {
+    if (window.innerWidth <= 640)  return 1;
+    if (window.innerWidth <= 1024) return 2;
+    return 3;
+  }
+
+  // Total pages
+  function totalPages() { return Math.ceil(total / perView()); }
+
+  // Build page-based dots
+  function buildDots() {
+    dotsEl.innerHTML = '';
+    const pages = totalPages();
+    for (let i = 0; i < pages; i++) {
+      const dot = document.createElement('button');
+      dot.className = 'dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', `Page ${i + 1}`);
+      dot.addEventListener('click', () => goTo(i * perView()));
+      dotsEl.appendChild(dot);
+    }
+  }
+
+  function updateUI() {
+    // Dots
+    const page = Math.floor(current / perView());
+    dotsEl.querySelectorAll('.dot').forEach((d, i) =>
+      d.classList.toggle('active', i === page));
+    // Counter
+    document.getElementById('slide-current').textContent = current + 1;
+    document.getElementById('slide-total').textContent   = total;
+    // Buttons
+    btnPrev.disabled = current === 0;
+    btnNext.disabled = current + perView() >= total;
+  }
+
+  function goTo(idx) {
+    const max = Math.max(0, total - perView());
+    current   = Math.min(Math.max(idx, 0), max);
+    // Pixel offset: slide width + gap (20px)
+    const slideW = slides[0].getBoundingClientRect().width;
+    track.style.transform = `translateX(-${current * (slideW + 20)}px)`;
+    updateUI();
+    // Play video if visible
+    track.querySelectorAll('.carousel-video').forEach(v => { v.pause(); v.currentTime = 0; });
+    for (let i = current; i < current + perView() && i < total; i++) {
+      const v = slides[i].querySelector('.carousel-video');
+      if (v) v.play().catch(() => {});
+    }
+  }
+
+  btnPrev.addEventListener('click', () => goTo(current - perView()));
+  btnNext.addEventListener('click', () => goTo(current + perView()));
+
+  // Touch swipe
+  let tx = 0;
+  track.addEventListener('touchstart', e => { tx = e.touches[0].clientX; }, { passive: true });
+  track.addEventListener('touchend',   e => {
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 45) goTo(current + (dx < 0 ? perView() : -perView()));
+  }, { passive: true });
+
+  // Keyboard
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowLeft')  goTo(current - perView());
+    if (e.key === 'ArrowRight') goTo(current + perView());
+  });
+
+  // Rebuild on resize
+  window.addEventListener('resize', () => { buildDots(); goTo(0); });
+
+  buildDots();
+  goTo(0);
+
+  // ──────────────────────────────────────────────────────────────
+  // 11. FORM SUBMISSION HANDLER
+  // ──────────────────────────────────────────────────────────────
+  // Supabase client
+  const _supabase = supabase.createClient(
+    'https://ikgrbnoxlnzanbljrsso.supabase.co',
+    'sb_publishable_qVBEUcLTpfNndMXJ5y-I8w_ieE1bSTN'
+  );
+
+  // ── FORM SECURITY ──
+  const FORM_RATE_KEY   = 'h4h_form_ts';
+  const FORM_COOLDOWN   = 60 * 1000; // 1 submit per 60 seconds per browser
+
+  function sanitizeInput(str, max) {
+    return String(str || '').trim().slice(0, max);
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  }
+
+  function isValidPhone(phone) {
+    return !phone || /^[\d\s\+\-\(\)]{7,20}$/.test(phone);
+  }
+
+  function isRateLimited() {
+    const last = parseInt(localStorage.getItem(FORM_RATE_KEY) || '0');
+    return Date.now() - last < FORM_COOLDOWN;
+  }
+
+  window.handleFormSubmit = async function(e) {
+    e.preventDefault();
+    const isLast = e.target.id === 'join-form-last';
+    const btn     = e.target.querySelector('button[type="submit"]');
+    const btnText = btn.querySelector('span') || btn;
+    const form    = e.target;
+    const success = document.getElementById(isLast ? 'form-success-last' : 'form-success');
+    const sfx     = isLast ? '2' : '';
+
+    // 1. Honeypot check — bot filled the hidden field
+    const hp = document.getElementById('hp-field' + (isLast ? '2' : ''));
+    if (hp && hp.value) return; // silently drop
+
+    // 2. Rate limit — one submission per minute per browser
+    if (isRateLimited()) {
+      btnText.textContent = '⏳ Please wait before submitting again';
+      setTimeout(() => { btnText.textContent = '⟡ Join Hearts For Humanity'; }, 3000);
+      return;
+    }
+
+    // 3. Input validation
+    const name  = sanitizeInput(document.getElementById('input-name'    + sfx).value, 80);
+    const email = sanitizeInput(document.getElementById('input-email'   + sfx).value, 100);
+    const phone = sanitizeInput(document.getElementById('input-phone'   + sfx)?.value, 20);
+    const role  = document.getElementById('input-role'   + sfx)?.value || '';
+    const msg   = sanitizeInput(document.getElementById('input-message' + sfx)?.value, 500);
+
+    if (!name || name.length < 2) {
+      btnText.textContent = '⚠ Please enter your full name';
+      setTimeout(() => { btnText.textContent = '⟡ Join Hearts For Humanity'; }, 3000);
+      return;
+    }
+    if (!isValidEmail(email)) {
+      btnText.textContent = '⚠ Please enter a valid email';
+      setTimeout(() => { btnText.textContent = '⟡ Join Hearts For Humanity'; }, 3000);
+      return;
+    }
+    if (!isValidPhone(phone)) {
+      btnText.textContent = '⚠ Invalid phone number';
+      setTimeout(() => { btnText.textContent = '⟡ Join Hearts For Humanity'; }, 3000);
+      return;
+    }
+
+    btnText.textContent = '⌛ Sending…';
+    btn.style.opacity = '0.7';
+    btn.disabled = true;
+
+    const { error } = await _supabase.from('volunteers').insert([{
+      name,
+      email,
+      phone:   phone || null,
+      message: (role ? `[${role}] ` : '') + (msg || '') || null,
+    }]);
+
+    if (error) {
+      btnText.textContent = '⟡ Join Hearts For Humanity';
+      btn.style.opacity = '1';
+      btn.disabled = false;
+      alert('Something went wrong. Please try again.');
+      return;
+    }
+
+    // 4. Record timestamp for rate limiting
+    localStorage.setItem(FORM_RATE_KEY, Date.now());
+
+    form.classList.add('hidden');
+    success.classList.remove('hidden');
+    gsap.from(success, { opacity: 0, y: 20, duration: 0.6, ease: 'power3.out' });
+  };
+
+  // ──────────────────────────────────────────────────────────────
+  // LOAD UPCOMING EVENTS FROM SUPABASE
+  // ──────────────────────────────────────────────────────────────
+  (async () => {
+    try {
+      const { data } = await _supabase
+        .from('events')
+        .select('*')
+        .eq('type', 'upcoming')
+        .order('date', { ascending: true })
+        .limit(6);
+
+      if (!data || !data.length) return;
+
+      const isAr = (localStorage.getItem('h4h_lang') || 'en') === 'ar';
+      const grid = document.getElementById('upcoming-events-grid');
+      grid.innerHTML = data.map(ev => {
+        const title = (isAr && ev.title_ar) ? ev.title_ar : ev.title;
+        const desc  = (isAr && ev.description_ar) ? ev.description_ar : (ev.description || '');
+        const dateStr = ev.date
+          ? new Date(ev.date + 'T00:00:00').toLocaleDateString(isAr ? 'ar-SA' : 'en-GB', { day:'numeric', month:'long', year:'numeric' })
+          : '';
+        const imgStyle = ev.image_url
+          ? `background-image:url('${ev.image_url}');background-size:cover;background-position:center;`
+          : 'background:linear-gradient(135deg,rgba(181,96,106,0.25),rgba(212,132,142,0.1));';
+        return `<div style="border-radius:1.25rem;overflow:hidden;border:1px solid rgba(181,96,106,0.25);background:rgba(253,240,242,0.04);backdrop-filter:blur(8px);display:flex;flex-direction:column;" dir="${isAr ? 'rtl' : 'ltr'}">
+          <div style="height:160px;${imgStyle}position:relative;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(18,6,10,0.7),transparent);"></div>
+            <span style="position:absolute;top:0.75rem;${isAr?'left':'right'}:0.75rem;background:rgba(181,96,106,0.9);color:#fff;font-size:0.65rem;font-weight:700;text-transform:uppercase;letter-spacing:0.08em;padding:0.25rem 0.6rem;border-radius:9999px;">Upcoming</span>
+          </div>
+          <div style="padding:1.25rem;flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+            <h3 style="font-size:1rem;font-weight:700;color:#FDF0F2;line-height:1.3;">${esc2(title)}</h3>
+            ${dateStr ? `<p style="font-size:0.78rem;color:#D4848E;font-weight:600;">📅 ${dateStr}${ev.time_str ? ' · ' + esc2(ev.time_str) : ''}</p>` : ''}
+            ${ev.location ? `<p style="font-size:0.78rem;color:rgba(253,240,242,0.5);">📍 ${esc2(ev.location)}</p>` : ''}
+            ${desc ? `<p style="font-size:0.83rem;color:rgba(253,240,242,0.65);line-height:1.55;margin-top:0.25rem;">${esc2(desc)}</p>` : ''}
+          </div>
+        </div>`;
+      }).join('');
+
+      document.getElementById('upcoming-events-wrap').style.display = 'block';
+    } catch(e) { /* silently fail if table doesn't exist yet */ }
+  })();
+
+  // Lightbox
+  function openLightbox(src) {
+    document.getElementById('lightbox-img').src = src;
+    document.getElementById('lightbox').style.display = 'flex';
+  }
+  window.openLightbox = openLightbox;
+
+  // ── LOAD GALLERY FROM SUPABASE + local fallback photos ──
+  const LOCAL_GALLERY = [
+    'galary/Screenshot 2026-06-24 213840.png',
+    'galary/Screenshot 2026-06-24 213956.png',
+    'galary/Screenshot 2026-06-24 214036.png',
+    'galary/Screenshot 2026-06-24 213852.png',
+    'galary/Screenshot 2026-06-24 214019.png',
+    'galary/Screenshot 2026-06-24 214057.png',
+    'galary/Screenshot 2026-06-24 214119.png',
+    'galary/Screenshot 2026-06-24 215301.png',
+    'galary/Screenshot 2026-06-24 215524.png',
+    'galary/Screenshot 2026-06-24 215534.png',
+    'galary/Screenshot 2026-06-24 215541.png',
+    'galary/Screenshot 2026-06-24 215558.png',
+    'galary/Screenshot 2026-06-24 215628.png',
+    'galary/Screenshot 2026-06-24 215709.png',
+  ];
+
+  function lazySection(id, fn) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const obs = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { obs.disconnect(); fn(); }
+    }, { rootMargin: '200px' });
+    obs.observe(el);
+  }
+
+  lazySection('gallery', async function loadGallerySection() {
+    const featured = document.getElementById('gallery-featured');
+    const grid     = document.getElementById('gallery-grid-main');
+    if (!featured || !grid) return;
+
+    // Fetch Supabase photos (newest first)
+    let dbPhotos = [];
+    try {
+      const { data } = await _supabase
+        .from('gallery')
+        .select('image_url, caption')
+        .order('created_at', { ascending: false });
+      if (data && data.length) dbPhotos = data;
+    } catch(e) {}
+
+    // Merge: DB photos first, then local ones
+    const dbUrls   = dbPhotos.map(p => ({ url: p.image_url, alt: p.caption || 'H4H' }));
+    const localUrls = LOCAL_GALLERY.map(u => ({ url: u, alt: 'H4H' }));
+    const all = [...dbUrls, ...localUrls];
+
+    // First 3 → featured tiles, rest → grid (batched)
+    const featuredPhotos = all.slice(0, 3);
+    const gridPhotos     = all.slice(3);
+    const BATCH = 20;
+    let loaded = 0;
+
+    featured.innerHTML = featuredPhotos.map(p =>
+      `<div class="img-tile" onclick="openLightbox('${p.url.replace(/'/g,"\\'")}')">
+        <img src="${p.url}" alt="${p.alt}" loading="lazy" />
+      </div>`
+    ).join('');
+
+    function renderBatch() {
+      const batch = gridPhotos.slice(loaded, loaded + BATCH);
+      batch.forEach(p => {
+        const div = document.createElement('div');
+        div.className = 'gallery-thumb';
+        div.onclick = () => openLightbox(p.url);
+        div.innerHTML = `<img src="${p.url}" alt="${p.alt}" loading="lazy" />`;
+        grid.appendChild(div);
+      });
+      loaded += batch.length;
+      const btn = document.getElementById('gallery-load-more');
+      if (btn) btn.style.display = loaded >= gridPhotos.length ? 'none' : 'block';
+    }
+
+    renderBatch();
+    window._galleryLoadMore = renderBatch;
+  });
+
+  // ── LOAD MEMBERS FROM SUPABASE ──
+  const FALLBACK_MEMBERS = [
+    { name:'Masa Abushaar',      role:'Organising Head',       photo_url:'new members/masa_abushaar.jpeg' },
+    { name:'Mustafe Ali',        role:'Organising Head',       photo_url:'new members/mustafe_ali.jpeg' },
+    { name:'Alwasmaa Abbas',     role:'Public Relations Head', photo_url:'new members/alwasmaa_abbas.jpeg' },
+    { name:'Abdulrahman Saidi',  role:'Public Relations Head', photo_url:'new members/abdulrahman_saidi.jpeg' },
+    { name:'Salma Abdelrazik',   role:'Outreach Head',         photo_url:'new members/salma_abdelrazik.jpeg' },
+    { name:'Sara Alnachef',      role:'Outreach Head',         photo_url:'new members/sara_alnachef.jpeg' },
+    { name:'Sara Samhan',        role:'Ambassador',            photo_url:'new members/sara_samhan.jpeg' },
+    { name:'Lara Samhan',        role:'Ambassador',            photo_url:'new members/lara_samhan.jpeg' },
+    { name:'Cristella Rafeh',    role:'General Secretary',     photo_url:'new members/cristella_rafeh.jpeg' },
+    { name:'Belal Afify',        role:'Vice President',        photo_url:'new members/belal_afify.jpeg' },
+    { name:'Noor Elabd',         role:'President',             photo_url:'new members/noor_elabd.jpeg' },
+  ];
+  // Last in array = shown on top, so Organising Head first → President last
+  FALLBACK_MEMBERS.sort((a, b) => {
+    const order = ['Organising Head','Public Relations Head','Outreach Head','Ambassador','General Secretary','Vice President','President'];
+    return order.indexOf(a.role) - order.indexOf(b.role);
+  });
+
+  lazySection('team', async function loadTeamSection() {
+    const stack = document.getElementById('team-stack');
+    if (!stack) return;
+    const isAr = (localStorage.getItem('h4h_lang') || 'en') === 'ar';
+
+    let members = FALLBACK_MEMBERS;
+    try {
+      const { data } = await _supabase
+        .from('members')
+        .select('name, name_ar, role, role_ar, photo_url')
+        .order('order_index', { ascending: true })
+        .order('created_at', { ascending: true });
+      if (data && data.length) members = data;
+    } catch(e) { /* table may not exist yet — use fallback */ }
+
+    stack.innerHTML = members.map((m, i) => {
+      const name = (isAr && m.name_ar) ? m.name_ar : m.name;
+      const role = (isAr && m.role_ar) ? m.role_ar : (m.role || '');
+      const pos  = i < members.length ? i : 0;
+      const photoStyle = m.photo_url
+        ? `<img src="${m.photo_url}" alt="${name}" />`
+        : `<div style="width:100%;height:280px;background:linear-gradient(135deg,rgba(181,96,106,0.3),rgba(212,132,142,0.1));display:flex;align-items:center;justify-content:center;font-size:3rem;">👤</div>`;
+      return `<div class="team-card" data-pos="${pos}">
+        ${photoStyle}
+        <div class="card-body"><h4>${name}</h4><p>${role}</p></div>
+      </div>`;
+    }).join('');
+
+    // Assign positions: top 4 cards visible, rest hidden
+    window._teamIndex = members.length - 1; // start with last member (President) on top
+    applyTeamPositions();
+  });
+
+  // ── LOAD NEWS FROM SUPABASE ──
+  lazySection('news', async function loadNewsSection() {
+    const grid    = document.getElementById('news-cards-grid');
+    const section = document.getElementById('news');
+    if (!grid || !section) return;
+    const isAr = (localStorage.getItem('h4h_lang') || 'en') === 'ar';
+
+    try {
+      const { data } = await _supabase
+        .from('news')
+        .select('*')
+        .eq('status', 'published')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (!data || !data.length) return;
+
+      const catIcons = { announcement:'📢', event:'📅', achievement:'🏆', health:'🩺', update:'🔔' };
+
+      grid.innerHTML = data.map(n => {
+        const title = (isAr && n.title_ar) ? n.title_ar : n.title;
+        const body  = (isAr && n.body_ar)  ? n.body_ar  : (n.body || '');
+        const date  = new Date(n.created_at).toLocaleDateString(isAr ? 'ar-SA' : 'en-GB', { day:'numeric', month:'long', year:'numeric' });
+        const icon  = catIcons[n.category] || '📰';
+        const preview = body.length > 120 ? body.slice(0, 120) + '…' : body;
+        const imgStyle = n.image_url
+          ? `background-image:url('${n.image_url}');background-size:cover;background-position:center;`
+          : 'background:linear-gradient(135deg,rgba(181,96,106,0.2),rgba(212,132,142,0.08));';
+        return `<div style="border-radius:1.25rem;overflow:hidden;border:1px solid rgba(181,96,106,0.2);background:rgba(253,240,242,0.03);backdrop-filter:blur(8px);display:flex;flex-direction:column;" dir="${isAr?'rtl':'ltr'}">
+          <div style="height:140px;${imgStyle}position:relative;">
+            <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(18,6,10,0.65),transparent);"></div>
+            <span style="position:absolute;top:0.75rem;${isAr?'left':'right'}:0.75rem;background:rgba(18,6,10,0.75);color:#D4848E;font-size:0.65rem;font-weight:700;letter-spacing:0.08em;padding:0.25rem 0.6rem;border-radius:9999px;border:1px solid rgba(181,96,106,0.35);">${icon} ${n.category || ''}</span>
+          </div>
+          <div style="padding:1.25rem;flex:1;display:flex;flex-direction:column;gap:0.5rem;">
+            <h3 style="font-size:0.98rem;font-weight:700;color:#FDF0F2;line-height:1.35;">${title}</h3>
+            ${preview ? `<p style="font-size:0.82rem;color:rgba(253,240,242,0.6);line-height:1.55;">${preview}</p>` : ''}
+            <p style="font-size:0.72rem;color:rgba(253,240,242,0.35);margin-top:auto;padding-top:0.5rem;">📅 ${date}</p>
+          </div>
+        </div>`;
+      }).join('');
+
+      section.style.display = 'block';
+    } catch(e) { /* silently skip if table not ready */ }
+  });
+
+  // Team stacked cards shuffle
+  // More nav dropdown
+  window.toggleNavMore = function() {
+    const m = document.getElementById('nav-more-menu');
+    m.style.display = m.style.display === 'none' ? 'block' : 'none';
+  };
+  document.addEventListener('click', function(e) {
+    if (!document.getElementById('nav-more-wrap').contains(e.target)) {
+      document.getElementById('nav-more-menu').style.display = 'none';
+    }
+  });
+
+  window.toggleMobileMenu = function() {
+    const menu = document.getElementById('mobile-menu');
+    const backdrop = document.getElementById('mobile-menu-backdrop');
+    const btn = document.getElementById('mobile-menu-btn');
+    const isOpen = menu.style.display === 'flex';
+    menu.style.display = isOpen ? 'none' : 'flex';
+    backdrop.style.display = isOpen ? 'none' : 'block';
+    const bars = btn.querySelectorAll('.mobile-bar');
+    if (!isOpen) {
+      bars[0].style.transform = 'rotate(45deg) translate(5px, 5px)';
+      bars[1].style.opacity = '0';
+      bars[2].style.transform = 'rotate(-45deg) translate(5px, -5px)';
+    } else {
+      bars[0].style.transform = '';
+      bars[1].style.opacity = '1';
+      bars[2].style.transform = '';
+    }
+  };
+  window.closeMobileMenu = function() {
+    document.getElementById('mobile-menu').style.display = 'none';
+    document.getElementById('mobile-menu-backdrop').style.display = 'none';
+    const bars = document.getElementById('mobile-menu-btn').querySelectorAll('.mobile-bar');
+    bars[0].style.transform = '';
+    bars[1].style.opacity = '1';
+    bars[2].style.transform = '';
+  };
+
+  function applyTeamPositions() {
+    const stack = document.getElementById('team-stack');
+    if (!stack) return;
+    const cards = [...stack.querySelectorAll('.team-card')];
+    const n = cards.length;
+    const top = window._teamIndex || 0;
+    cards.forEach((card, i) => {
+      const relPos = (i - top + n) % n;
+      if (relPos === 0)       { card.style.display = ''; card.dataset.pos = 3; }
+      else if (relPos === n-1){ card.style.display = ''; card.dataset.pos = 2; }
+      else if (relPos === n-2){ card.style.display = ''; card.dataset.pos = 1; }
+      else if (relPos === n-3){ card.style.display = ''; card.dataset.pos = 0; }
+      else                    { card.style.display = 'none'; }
+    });
+  }
+  window.applyTeamPositions = applyTeamPositions;
+
+  window.shuffleTeam = function() {
+    const stack = document.getElementById('team-stack');
+    if (!stack) return;
+    const n = stack.querySelectorAll('.team-card').length;
+    window._teamIndex = ((window._teamIndex || 0) - 1 + n) % n;
+    applyTeamPositions();
+  };
+
+  // Circular testimonials carousel
+  (function() {
+    const slides = document.querySelectorAll('.circ-slide');
+    const dotsEl = document.getElementById('circ-dots');
+    let current = 0;
+    let timer;
+
+    slides.forEach((_, i) => {
+      const d = document.createElement('span');
+      d.className = 'circ-dot' + (i === 0 ? ' active' : '');
+      d.onclick = () => goTo(i);
+      dotsEl.appendChild(d);
+    });
+
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      dotsEl.children[current].classList.remove('active');
+      current = (n + slides.length) % slides.length;
+      slides[current].classList.add('active');
+      dotsEl.children[current].classList.add('active');
+      resetTimer();
+    }
+    function resetTimer() { clearInterval(timer); timer = setInterval(() => goTo(current + 1), 5000); }
+    window.circNext = () => goTo(current + 1);
+    window.circPrev = () => goTo(current - 1);
+    resetTimer();
+  })();
+
+  // Newsletter
+  window.handleNewsletter = async function(e) {
+    e.preventDefault();
+    const email = document.getElementById('newsletter-email').value.trim();
+    const { error } = await _supabase.from('volunteers').insert([{ email, name: 'Newsletter', message: '[newsletter]' }]);
+    document.getElementById('newsletter-form').style.display = 'none';
+    document.getElementById('newsletter-success').style.display = 'block';
+  };
+
+  function esc2(s) {
+    return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // COUNTER ANIMATION
+  // ──────────────────────────────────────────────────────────────
+  document.querySelectorAll('.counter').forEach(el => {
+    const target = +el.dataset.target;
+    let started = false;
+    ScrollTrigger.create({
+      trigger: el,
+      start: 'top 85%',
+      onEnter: () => {
+        if (started) return;
+        started = true;
+        let current = 0;
+        const step = target / 60;
+        const timer = setInterval(() => {
+          current = Math.min(current + step, target);
+          el.textContent = Math.round(current) + (target >= 100 ? '+' : '');
+          if (current >= target) clearInterval(timer);
+        }, 16);
+      }
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────
+  // FAQ TOGGLE + RIPPLE
+  // ──────────────────────────────────────────────────────────────
+  const faqRipple = document.getElementById('faq-ripple');
+
+  document.querySelectorAll('.faq-item').forEach(item => {
+    // show ripple circle on hover / touch
+    item.addEventListener('mouseenter', e => {
+      const r = item.getBoundingClientRect();
+      faqRipple.style.left = (r.left + r.width / 2) + 'px';
+      faqRipple.style.top  = (r.top  + r.height / 2) + 'px';
+      faqRipple.style.transform = 'translate(-50%,-50%) scale(1)';
+      faqRipple.style.opacity = '1';
+    });
+
+    item.addEventListener('mousemove', e => {
+      faqRipple.style.left = e.clientX + 'px';
+      faqRipple.style.top  = e.clientY + 'px';
+    });
+
+    item.addEventListener('mouseleave', () => {
+      faqRipple.style.transform = 'translate(-50%,-50%) scale(0)';
+      faqRipple.style.opacity = '0';
+    });
+
+    // touch: burst ripple on tap
+    item.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      faqRipple.style.left = t.clientX + 'px';
+      faqRipple.style.top  = t.clientY + 'px';
+      faqRipple.style.transition = 'opacity 0.15s, transform 0.35s cubic-bezier(0.22,1,0.36,1)';
+      faqRipple.style.transform = 'translate(-50%,-50%) scale(1.6)';
+      faqRipple.style.opacity = '0.8';
+      setTimeout(() => {
+        faqRipple.style.transform = 'translate(-50%,-50%) scale(0)';
+        faqRipple.style.opacity = '0';
+      }, 350);
+    }, { passive: true });
+
+    // toggle open/close
+    item.addEventListener('click', () => {
+      const answer = item.querySelector('.faq-answer');
+      const arrow  = item.querySelector('.faq-arrow');
+      const isOpen = !answer.classList.contains('hidden');
+      document.querySelectorAll('.faq-answer').forEach(a => a.classList.add('hidden'));
+      document.querySelectorAll('.faq-arrow').forEach(a => { a.textContent = '+'; a.style.transform = ''; });
+      if (!isOpen) {
+        answer.classList.remove('hidden');
+        arrow.textContent = '×';
+        arrow.style.transform = 'rotate(45deg)';
+      }
+    });
+  });
+
+  // ──────────────────────────────────────────────────────────────
+  // ARABIC / ENGLISH TRANSLATION SYSTEM
+  // ──────────────────────────────────────────────────────────────
+  const translations = {
+    en: {
+      nav_about: 'About', nav_impact: 'Impact', nav_events: 'Events', nav_mission: 'Mission',
+      nav_team: 'Team', nav_news: 'News', nav_gallery: 'Gallery', nav_join_link: 'Join',
+      nav_subteams: 'Subteams', nav_more: 'More', nav_testimonials: 'Testimonials', nav_newsletter: 'Newsletter',
+      nav_what: 'What We Do',
+      nav_involved: 'Get Involved', nav_join: 'Join Us', nav_donate: 'Donate',
+      hero_badge: 'Student-Led Initiative',
+      hero_sub: 'Making a difference — one person, one meal,<br/>one act of kindness at a time.',
+      hero_cta: '⟡ Support the Cause',
+      stat_meals: 'Meals Served', stat_events: 'Events', stat_vol: 'Volunteer-Run',
+      scroll_lbl: 'Scroll',
+      about_eyebrow: 'Our Story', about_title: 'Helping Hands<br/><span class="gradient-text">for Homeless</span>',
+      about_mission_title: 'Our Mission',
+      wwd_eyebrow: 'Our Activities',
+      wwd_card1_title: 'Donation Drives', wwd_card2_title: 'Meal Distribution', wwd_card3_title: 'Community Outreach',
+      impact_title: 'Numbers That <span class="gradient-text">Matter</span>',
+      impact_meals: 'Meals Served', impact_vol: 'Volunteers', impact_events: 'Events Held', impact_lives: 'Lives Touched',
+      hiw_step1: 'Sign Up', hiw_step2: 'Get Connected', hiw_step3: 'Make Impact',
+      gi_eyebrow: 'Take Action',
+      gi_title: 'Ready to Make a<br/><span class="gradient-text">Difference?</span>',
+      gi_form_title: 'Join the Team',
+      gi_form_sub: "Fill in your details and we'll reach out about upcoming events and volunteer opportunities.",
+      gi_sub: 'Whether you want to volunteer at our next event, donate supplies, or simply spread the word — every action matters. Join our growing family of compassionate students and let\'s build a better community together.',
+      gi_title: 'Ready to Make a<br/><span class="gradient-text">Difference?</span>',
+      gi_way1_title: 'Volunteer', gi_way1_desc: 'Join us at our next field visit or donation drive.',
+      gi_way2_title: 'Donate Supplies', gi_way2_desc: 'Drop off clothing, food, or essentials at our collection points on campus.',
+      gi_way3_title: 'Spread the Word', gi_way3_desc: 'Share our mission with friends, family, and your network.',
+      gi_follow: 'Follow Our Journey',
+      about_title: 'Helping Hands<br/><span class="gradient-text">for Homeless</span>',
+      about_p1: 'H4H <em>(Helping Hands for Homeless)</em> is a student-led team at Alfaisal University driven by compassion and a commitment to real community impact.',
+      about_p2: 'We organize donation drives, distribute essentials to those in need, and believe that helping others is not just a duty — it\'s a way of life.',
+      about_p3: 'H4H is an <strong style="color:#D4848E;">independent team</strong>, operating outside any student association — purely fueled by student passion and the desire to make Riyadh a more compassionate city.',
+      about_mission_text: 'To bridge the gap between those who have and those who need — through organized action, genuine empathy, and consistent community presence.',
+      about_li1: 'Student-led & passion-driven', about_li2: 'Alfaisal University, Riyadh',
+      about_li3: 'Independent — no student association ties', about_li4: '100% volunteer-driven operations',
+      impact_eyebrow: 'Our Impact',
+      quote_text: 'No act of kindness, no matter how small, is ever wasted. Every meal shared, every hand extended — it echoes far beyond the moment.',
+      wwd_title: 'What We <span class="gradient-text">Do</span>',
+      wwd_sub: 'Three pillars of action that define how we create real, lasting change on the ground.',
+      wwd_card1_title: 'Donation Drives', wwd_card1_desc: 'We collect clothing, food, and essential supplies from generous donors across the Alfaisal community and beyond — then distribute them directly to homeless individuals in Riyadh.',
+      wwd_card2_title: 'Meal Distribution', wwd_card2_desc: 'From hot meals to packaged food kits, we organize regular meal distribution events — ensuring that no one goes to sleep hungry in our city. Dignity and respect are at the heart of every interaction.',
+      wwd_card3_title: 'Community Outreach', wwd_card3_desc: 'We go beyond one-off events — building ongoing relationships with the homeless community, raising awareness on campus, and inspiring others to take action through social media campaigns and university talks.',
+      wwd_learn_more: 'Learn More',
+      learn_more_arrow: 'Learn More →',
+      wwd_card1_title: 'Medical Education Workshops',
+      wwd_card1_desc: 'We bring healthcare knowledge directly to shelters, orphanages, and low-income schools — running workshops on CPR & First Aid, menstrual health, emergency response, and mental health support.',
+      wwd_card2_title: 'Health Checkups & Screening',
+      wwd_card2_desc: 'Our medical student volunteers conduct free health screenings for breast & cervical cancer and comorbidities like hypertension and diabetes — reaching communities who have no other access to care.',
+      wwd_card3_title: 'Donation Programs',
+      wwd_card3_desc: 'We collect and distribute medications, clothes, and female hygiene products to underprivileged families — ensuring every person receives support with full dignity and care.',
+      wwd_card4_title: 'Collaborative Volunteering',
+      wwd_card4_desc: 'We partner with H4H Jeddah for Umrah Medical Camps, collaborate with the SAKINAH group on women\'s health, and establish community support systems for the underprivileged.',
+      hiw_eyebrow: 'The Process', hiw_title: 'How It <span class="gradient-text">Works</span>',
+      hiw_sub: "Getting involved is simple. Here's how we turn compassion into action.",
+      hiw_desc1: "Fill in the form below with your name, email, and how you'd like to help. Takes less than a minute.",
+      hiw_desc2: "We'll add you to our WhatsApp group and notify you about upcoming events, drives, and field visits.",
+      hiw_desc3: "Show up, give your time, and witness first-hand the difference your hands can make in someone's life.",
+      faq_eyebrow: 'Questions', faq_title: 'Frequently <span class="gradient-text">Asked</span>',
+      faq_q1: 'Do I need any prior experience to volunteer?', faq_a1: 'Not at all. All you need is a willing heart and a few hours of your time. We guide every new volunteer through the process.',
+      faq_q2: 'How often do events take place?', faq_a2: "We aim to hold events every 2–3 weeks. You'll receive updates via our WhatsApp group as soon as an event is confirmed.",
+      faq_q3: 'Is H4H open to students from all majors?', faq_a3: 'Yes! Hearts For Humanity welcomes every Alfaisal student regardless of major, year, or background. Compassion has no prerequisites.',
+      faq_q4: 'What kind of donations do you accept?', faq_a4: 'We accept clothing, non-perishable food items, hygiene products, and blankets. Monetary donations can also be arranged — contact us for details.',
+      faq_q5: 'Will I get a volunteer certificate?', faq_a5: 'We are working on issuing participation certificates for active volunteers. Stay tuned for announcements in the WhatsApp group.',
+      events_eyebrow: '✦ Our Impact in Action ✦', events_title: 'Past &amp; Upcoming <span class="gradient-text">Events</span>',
+      events_sub: 'A glimpse into the moments that define us — captured during our field trips and community outreach drives.',
+      events_upcoming_label: '✦ Upcoming ✦',
+      form_name: 'Full Name', form_email: 'Email Address', form_phone: 'Phone / WhatsApp',
+      form_role: 'How Would You Like to Help?', form_msg: 'Message (Optional)',
+      form_submit: '⟡ Join Hearts For Humanity',
+      form_thanks: 'Thank You!', form_thanks_sub: "We've received your sign-up. We'll be in touch soon about upcoming events.",
+      spacer3_badge: 'Active in Riyadh',
+      spacer3_text: "Compassion isn't just a feeling —<br/>it's showing up when it matters most.",
+      spacer4_text: 'Join a team of students who believe that small actions, done consistently, change lives.',
+      spacer4_btn: '⟡ Get Involved Today',
+      mission_pre: 'What is our', mission_heading: 'MISSION?',
+      mission_body: 'As a student-led initiative, we are dedicated to supporting those in need through donation drives, meal distribution, community outreach, and awareness campaigns. We prioritize a holistic approach to well-being in Saudi Arabia, ensuring that every person is treated with dignity and care.',
+      mission_quote: "'At H4H, our hearts and souls are fully<br/>committed to serving humanity!'",
+      team_eyebrow: '✦ The People Behind It ✦',
+      team_title: 'Meet the <span class="gradient-text">Team</span>',
+      team_sub: 'The passionate students making H4H happen on the ground every single day.',
+      team_shuffle: '👆 Click to shuffle cards',
+      news_eyebrow: '✦ Latest Updates ✦',
+      news_title: 'H4H <span class="gradient-text">News</span>',
+    },
+    ar: {
+      nav_about: 'من نحن', nav_impact: 'الأثر', nav_events: 'الفعاليات', nav_mission: 'رسالتنا',
+      nav_team: 'الفريق', nav_news: 'أخبار', nav_gallery: 'معرض', nav_join_link: 'انضم',
+      nav_subteams: 'الفرق الفرعية', nav_more: 'المزيد', nav_testimonials: 'آراء المتطوعين', nav_newsletter: 'النشرة البريدية',
+      nav_what: 'ما نفعله',
+      nav_involved: 'انضم إلينا', nav_join: 'انضم الآن', nav_donate: 'تبرع',
+      hero_badge: 'مبادرة طلابية',
+      hero_sub: 'نصنع الفارق — شخصاً بشخص، وجبةً بوجبة،<br/>وعملاً بعمل طيب.',
+      hero_cta: '⟡ ادعم القضية',
+      stat_meals: 'وجبة مُقدَّمة', stat_events: 'فعاليات', stat_vol: 'تطوعي 100%',
+      scroll_lbl: 'مرر للأسفل',
+      about_eyebrow: 'قصتنا', about_title: 'يد العون<br/><span class="gradient-text">للمحتاجين</span>',
+      about_mission_title: 'رسالتنا',
+      wwd_eyebrow: 'أنشطتنا',
+      wwd_card1_title: 'حملات التبرع', wwd_card2_title: 'توزيع الوجبات', wwd_card3_title: 'التواصل المجتمعي',
+      impact_title: 'أرقام <span class="gradient-text">تتحدث</span>',
+      impact_meals: 'وجبة مُقدَّمة', impact_vol: 'متطوع', impact_events: 'فعالية', impact_lives: 'حياة تأثرت',
+      hiw_step1: 'سجّل', hiw_step2: 'تواصل معنا', hiw_step3: 'اصنع الأثر',
+      gi_eyebrow: 'شارك معنا',
+      gi_title: 'مستعد لصنع<br/><span class="gradient-text">الفارق؟</span>',
+      gi_form_title: 'انضم إلى الفريق',
+      gi_form_sub: 'أدخل بياناتك وسنتواصل معك بشأن الفعاليات القادمة وفرص التطوع.',
+      gi_sub: 'سواء أردت التطوع في فعاليتنا القادمة، التبرع بالمستلزمات، أو نشر رسالتنا — كل عمل يُحدث فرقاً. انضم إلى عائلتنا المتنامية من الطلاب ولنبنِ مجتمعاً أفضل معاً.',
+      gi_title: 'هل أنت مستعد لصنع<br/><span class="gradient-text">الفارق؟</span>',
+      gi_way1_title: 'تطوع', gi_way1_desc: 'انضم إلينا في زيارتنا الميدانية أو حملة التبرع القادمة.',
+      gi_way2_title: 'تبرع بالمستلزمات', gi_way2_desc: 'أحضر الملابس والطعام أو المستلزمات الأساسية إلى نقاط التجميع في الحرم الجامعي.',
+      gi_way3_title: 'انشر الكلمة', gi_way3_desc: 'شارك رسالتنا مع أصدقائك وعائلتك وشبكة معارفك.',
+      gi_follow: 'تابع رحلتنا',
+      about_title: 'يد العون<br/><span class="gradient-text">للمحتاجين</span>',
+      about_p1: 'H4H <em>(يد العون للمحتاجين)</em> فريق طلابي في جامعة الفيصل تحرّكه الرحمة والالتزام بإحداث أثر حقيقي في المجتمع.',
+      about_p2: 'ننظّم حملات تبرع ونوزّع المستلزمات على المحتاجين، ونؤمن بأن مساعدة الآخرين ليست واجباً فحسب — بل أسلوب حياة.',
+      about_p3: 'H4H <strong style="color:#D4848E;">فريق مستقل</strong> لا ينتمي إلى أي اتحاد طلابي — يُحرّكه شغف الطلاب ورغبتهم في جعل الرياض مدينةً أكثر رحمة.',
+      about_mission_text: 'سدّ الفجوة بين من يملك ومن يحتاج — من خلال عمل منظّم، وتعاطف حقيقي، وحضور مجتمعي مستمر.',
+      about_li1: 'بقيادة طلابية ودوافع حقيقية', about_li2: 'جامعة الفيصل، الرياض',
+      about_li3: 'مستقل — لا روابط باتحادات طلابية', about_li4: 'عمليات تطوعية 100٪',
+      impact_eyebrow: 'أثرنا',
+      quote_text: 'لا يضيع أي عمل طيب مهما كان صغيراً. كل وجبة تُشارَك وكل يد تُمَد — تتردّد أصداؤها بعيداً عن اللحظة.',
+      wwd_title: 'ما <span class="gradient-text">نفعله</span>',
+      wwd_sub: 'ثلاثة محاور عمل ترسم كيف نُحدث تغييراً حقيقياً وجذرياً على أرض الواقع.',
+      wwd_card1_title: 'حملات التبرع', wwd_card1_desc: 'نجمع الملابس والطعام والمستلزمات الأساسية من متبرعين كرماء في مجتمع الفيصل وخارجه، ثم نوزّعها مباشرة على الأشخاص المشرّدين في الرياض.',
+      wwd_card2_title: 'توزيع الوجبات', wwd_card2_desc: 'من الوجبات الساخنة إلى علب الطعام، ننظّم فعاليات منتظمة لتوزيع الوجبات — حتى لا ينام أحد جائعاً في مدينتنا. الكرامة والاحترام في صميم كل تفاعل.',
+      wwd_card3_title: 'التواصل المجتمعي', wwd_card3_desc: 'نتخطى الفعاليات المنفردة — نبني علاقات مستمرة مع مجتمع المشرّدين، ونرفع الوعي داخل الحرم الجامعي، ونلهم الآخرين على العمل من خلال حملات التواصل الاجتماعي.',
+      wwd_learn_more: 'اقرأ المزيد',
+      learn_more_arrow: 'اقرأ المزيد →',
+      wwd_card1_title: 'ورش التثقيف الصحي',
+      wwd_card1_desc: 'نوصل المعرفة الطبية مباشرةً إلى دور الإيواء والأيتام والمدارس — من خلال ورش الإسعافات الأولية والصحة الإنجابية ودعم الصحة النفسية.',
+      wwd_card2_title: 'الفحوصات والكشف المبكر',
+      wwd_card2_desc: 'يُجري متطوعونا من طلاب الطب فحوصات مجانية لسرطان الثدي وعنق الرحم وأمراض مزمنة كضغط الدم والسكري — لمجتمعات لا تملك وصولاً آخر للرعاية.',
+      wwd_card3_title: 'برامج التبرع',
+      wwd_card3_desc: 'نجمع ونوزع الأدوية والملابس ومستلزمات النظافة على الأسر المحتاجة — لنضمن أن يحصل كل شخص على الدعم بكرامة كاملة.',
+      wwd_card4_title: 'التطوع التشاركي',
+      wwd_card4_desc: 'نتشارك مع H4H جدة في المخيمات الطبية لموسم العمرة، ونتعاون مع مجموعة سكينة في صحة المرأة، ونبني أنظمة دعم مجتمعية للمحتاجين.',
+      hiw_eyebrow: 'الخطوات', hiw_title: 'كيف <span class="gradient-text">يعمل</span>',
+      hiw_sub: 'المشاركة سهلة. إليك كيف نحوّل التعاطف إلى عمل.',
+      hiw_desc1: 'أدخل اسمك وبريدك الإلكتروني وكيف تودّ المساعدة في النموذج أدناه. لا يستغرق أقل من دقيقة.',
+      hiw_desc2: 'سنضيفك إلى مجموعة واتساب الخاصة بنا وسنبلّغك بالفعاليات القادمة والحملات والزيارات الميدانية.',
+      hiw_desc3: 'احضر، أعطِ من وقتك، وشاهد بنفسك الفرق الذي تصنعه يداك في حياة شخص آخر.',
+      faq_eyebrow: 'استفسارات', faq_title: 'الأسئلة <span class="gradient-text">الشائعة</span>',
+      faq_q1: 'هل أحتاج إلى خبرة مسبقة للتطوع؟', faq_a1: 'لا على الإطلاق. كل ما تحتاجه قلب راغب وبضع ساعات من وقتك. نرشد كل متطوع جديد خطوة بخطوة.',
+      faq_q2: 'كم مرة تُقام الفعاليات؟', faq_a2: 'نهدف إلى إقامة فعالية كل 2-3 أسابيع. ستتلقى التحديثات عبر مجموعة واتساب فور تأكيد أي فعالية.',
+      faq_q3: 'هل H4H مفتوح لطلاب جميع التخصصات؟', faq_a3: 'نعم! ترحّب Hearts For Humanity بكل طالب في جامعة الفيصل بغض النظر عن تخصصه أو سنته الدراسية أو خلفيته. الرحمة لا شروط لها.',
+      faq_q4: 'ما أنواع التبرعات التي تقبلونها؟', faq_a4: 'نقبل الملابس والأغذية غير القابلة للتلف ومستلزمات النظافة والبطانيات. يمكن أيضاً ترتيب التبرعات المالية — تواصل معنا لمزيد من التفاصيل.',
+      faq_q5: 'هل سأحصل على شهادة تطوع؟', faq_a5: 'نعمل على إصدار شهادات مشاركة للمتطوعين الفاعلين. ترقّب الإعلانات في مجموعة واتساب.',
+      events_eyebrow: '✦ أثرنا في الميدان ✦', events_title: 'فعاليات <span class="gradient-text">سابقة وقادمة</span>',
+      events_sub: 'لمحة من اللحظات التي تعرّفنا فيها — التُقطت خلال رحلاتنا الميدانية وحملات التواصل المجتمعي.',
+      events_upcoming_label: '✦ القادمة ✦',
+      form_name: 'الاسم الكامل', form_email: 'البريد الإلكتروني', form_phone: 'رقم الهاتف / واتساب',
+      form_role: 'كيف تودّ المساعدة؟', form_msg: 'رسالة (اختياري)',
+      form_submit: '⟡ انضم إلى Hearts For Humanity',
+      form_thanks: 'شكراً لك!', form_thanks_sub: 'استلمنا طلبك. سنتواصل معك قريباً بشأن الفعاليات القادمة.',
+      spacer3_badge: 'نشيطون في الرياض',
+      spacer3_text: 'التعاطف ليس مجرد شعور —<br/>بل هو الحضور في اللحظة التي تهم.',
+      spacer4_text: 'انضم إلى فريق من الطلاب يؤمنون بأن الأعمال الصغيرة المتواصلة تغيّر الحياة.',
+      spacer4_btn: '⟡ شارك معنا اليوم',
+      mission_pre: 'ما هي', mission_heading: 'رسالتنا؟',
+      mission_body: 'بوصفنا مبادرة طلابية، نُكرّس جهودنا لدعم المحتاجين من خلال حملات التبرع وتوزيع الوجبات والتواصل المجتمعي وحملات التوعية — ونضمن أن يُعامَل كل شخص بكرامة واحترام.',
+      mission_quote: "'في H4H، قلوبنا وأرواحنا مكرّسة بالكامل لخدمة الإنسانية!'",
+      team_eyebrow: '✦ الأشخاص خلف كل هذا ✦',
+      team_title: 'تعرّف على <span class="gradient-text">الفريق</span>',
+      team_sub: 'الطلاب المتحمسون الذين يجعلون H4H حقيقةً على أرض الواقع كل يوم.',
+      team_shuffle: '👆 انقر لتغيير البطاقات',
+      news_eyebrow: '✦ آخر المستجدات ✦',
+      news_title: 'أخبار <span class="gradient-text">H4H</span>',
+    }
+  };
+
+  let currentLang = localStorage.getItem('h4h_lang') || 'en';
+
+  function applyLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('h4h_lang', lang);
+    const t = translations[lang];
+    const isAr = lang === 'ar';
+
+    // RTL / LTR
+    document.documentElement.lang = isAr ? 'ar' : 'en';
+    document.documentElement.dir  = isAr ? 'rtl' : 'ltr';
+    document.body.style.fontFamily = isAr ? "'Noto Sans Arabic', 'Inter', sans-serif" : "'Inter', sans-serif";
+
+    // Apply all translations
+    document.querySelectorAll('[data-i18n]').forEach(el => {
+      const key = el.dataset.i18n;
+      if (t[key] !== undefined) el.innerHTML = t[key];
+    });
+
+    // Toggle button label
+    const btn = document.getElementById('lang-toggle');
+    if (btn) btn.textContent = isAr ? 'English' : 'عربي';
+
+    // Form placeholders
+    if (isAr) {
+      const n = document.getElementById('input-name');
+      const e = document.getElementById('input-email');
+      const p = document.getElementById('input-phone');
+      const m = document.getElementById('input-message');
+      if (n) n.placeholder = 'مثال: عبدالرحمن الرشيد';
+      if (e) e.placeholder = 'بريدك الإلكتروني';
+      if (p) p.placeholder = 'رقم الجوال / واتساب';
+      if (m) m.placeholder = 'اكتب رسالتك هنا (اختياري)';
+    } else {
+      const n = document.getElementById('input-name');
+      const e = document.getElementById('input-email');
+      const p = document.getElementById('input-phone');
+      const m = document.getElementById('input-message');
+      if (n) n.placeholder = 'e.g. Abdullah Al-Rashid';
+      if (e) e.placeholder = 'your@email.com';
+      if (p) p.placeholder = '+966 5x xxx xxxx';
+      if (m) m.placeholder = 'Anything you\'d like us to know (optional)';
+    }
+  }
+
+  window.toggleLang = function() {
+    applyLang(currentLang === 'en' ? 'ar' : 'en');
+  };
+
+  // Apply on load
+  applyLang(currentLang);
+
+  // Load Arabic font if needed
+  if (!document.getElementById('arabic-font')) {
+    const link = document.createElement('link');
+    link.id   = 'arabic-font';
+    link.rel  = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@300;400;500;600;700;800&display=swap';
+    document.head.appendChild(link);
+  }
+
+  // ──────────────────────────────────────────────────────────────
+  // 12. SMOOTH ANCHOR SCROLL
+  // ──────────────────────────────────────────────────────────────
+  document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+      const target = document.querySelector(this.getAttribute('href'));
+      if (!target) return;
+      e.preventDefault();
+      target.scrollIntoView({ behavior: 'smooth' });
+    });
+  });
+
+})();
+</script>
+
+</body>
+</html>

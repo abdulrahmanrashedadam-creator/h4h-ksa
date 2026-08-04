@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Outreach Team — Hearts For Humanity</title>
+  <link rel="icon" href="logo2.png" type="image/png" />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root { --rose: #2A9B7A; --pink: #4EC8A0; --cream: #F0FFFA; --dark: #030E0A; }
+    body { background: var(--dark); color: var(--cream); font-family: 'Inter', sans-serif; overflow-x: hidden; }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 1000; display: flex; align-items: center; justify-content: space-between; padding: 1rem 2rem; background: rgba(3,14,10,0.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(42,155,122,0.15); }
+    .nav-logo { display: flex; align-items: center; gap: 0.6rem; text-decoration: none; }
+    .nav-logo img { width: 36px; height: 36px; border-radius: 50%; }
+    .nav-logo span { font-family: 'Playfair Display', serif; font-size: 1rem; color: var(--cream); }
+    .nav-links { display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; }
+    .nav-links a.active { color: var(--pink); font-weight: 600; }
+    .nav-links a { color: rgba(253,240,242,0.7); text-decoration: none; font-size: 0.85rem; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--cream); }
+    .nav-back { background: rgba(42,155,122,0.15); border: 1px solid rgba(42,155,122,0.3); color: var(--cream); padding: 0.45rem 1.1rem; border-radius: 2rem; font-size: 0.82rem; text-decoration: none; transition: background 0.2s; }
+
+    /* ── LEVER SWITCH ── */
+    .lang-toggle { display:flex; align-items:center; gap:7px; margin-left:1rem; flex-shrink:0; }
+    .lang-lbl { font-size:0.65rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:rgba(255,255,255,0.25); transition:color 0.3s; user-select:none; cursor:pointer; }
+    .lang-lbl.on { color:var(--pink); }
+    .lever-wrap { position:relative; width:50px; height:26px; cursor:pointer; flex-shrink:0; }
+    .lever-housing { position:absolute; inset:0; background:rgba(0,0,0,0.35); border:1.5px solid rgba(255,255,255,0.12); border-radius:5px; box-shadow:inset 0 2px 6px rgba(0,0,0,0.5); }
+    .lever-housing::before { content:''; position:absolute; top:3px; bottom:3px; left:50%; width:1px; transform:translateX(-50%); background:rgba(255,255,255,0.08); }
+    .lever-arm { position:absolute; bottom:3px; left:50%; width:5px; height:18px; transform:translateX(-50%) rotate(-28deg); transform-origin:50% 100%; border-radius:3px 3px 2px 2px; background:linear-gradient(90deg,#888,#ddd 45%,#888); box-shadow:0 1px 4px rgba(0,0,0,0.6),inset 0 0 0 1px rgba(255,255,255,0.12); transition:transform 0.42s cubic-bezier(0.34,1.56,0.64,1); }
+    .lever-arm::after { content:''; position:absolute; top:-8px; left:50%; transform:translateX(-50%); width:12px; height:12px; border-radius:50%; background:radial-gradient(circle at 38% 32%, #f0f0f0 0%, #777 100%); box-shadow:0 2px 5px rgba(0,0,0,0.55); }
+    .lever-arm::before { content:''; position:absolute; bottom:-1px; left:50%; transform:translateX(-50%); width:8px; height:8px; border-radius:50%; background:radial-gradient(#555,#222); border:1px solid #111; }
+    .lever-wrap.ar .lever-arm { transform:translateX(-50%) rotate(28deg); }
+    /* RTL layout */
+    [dir="rtl"] .container { direction:rtl; }
+    [dir="rtl"] .why-card { flex-direction:row-reverse; }
+    [dir="rtl"] .hero-content { text-align:right; }
+    [dir="rtl"] .nav-links { flex-direction:row-reverse; }
+    [dir="rtl"] .process-step:nth-child(even) { flex-direction:row; }
+    .nav-back:hover { background: rgba(42,155,122,0.35); }
+
+    /* ── CINEMATIC HERO ── */
+    .hero { position: relative; min-height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; overflow: hidden; }
+    .hero-bg-img { position: absolute; inset: 0; background: url('galary/Screenshot 2026-06-24 213840.png') center/cover no-repeat; transform: scale(1.08); transition: transform 8s ease-out; }
+    .hero-bg-img.loaded { transform: scale(1); }
+    .hero-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(3,14,10,0.6) 0%, rgba(3,14,10,0.78) 50%, rgba(3,14,10,0.97) 100%); }
+    .hero-content { position: relative; z-index: 2; padding: 8rem 2rem 2.5rem; opacity: 0; transform: translateY(30px); transition: opacity 1s ease 0.3s, transform 1s ease 0.3s; }
+    .hero-content.visible { opacity: 1; transform: translateY(0); }
+    .hero-eyebrow { display: inline-block; padding: 0.35rem 1.1rem; background: rgba(253,240,242,0.1); border: 1px solid rgba(253,240,242,0.25); backdrop-filter: blur(8px); border-radius: 2rem; font-size: 0.72rem; letter-spacing: 0.18em; text-transform: uppercase; color: rgba(253,240,242,0.85); margin-bottom: 1.75rem; }
+    .hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(3.5rem, 10vw, 7rem); font-weight: 800; line-height: 1; color: #fff; text-shadow: 0 4px 30px rgba(0,0,0,0.4); margin-bottom: 1.25rem; }
+    .hero h1 span { background: linear-gradient(135deg, #FDF0F2, #4EC8A0); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .hero p { font-size: clamp(1rem, 2vw, 1.15rem); color: rgba(253,240,242,0.75); max-width: 520px; margin: 0 auto 2.5rem; line-height: 1.75; }
+    .hero-cta { display: inline-block; padding: 1rem 2.5rem; background: rgba(253,240,242,0.12); border: 1px solid rgba(253,240,242,0.35); backdrop-filter: blur(12px); color: #fff; border-radius: 3rem; font-weight: 600; font-size: 0.95rem; text-decoration: none; letter-spacing: 0.04em; transition: background 0.3s, transform 0.2s; }
+    .hero-cta:hover { background: rgba(42,155,122,0.5); transform: translateY(-2px); }
+
+    /* Photo strip */
+    .hero-photo-strip { position: relative; z-index: 2; display: flex; gap: 1rem; justify-content: center; align-items: flex-end; padding: 0 2rem 3.5rem; opacity: 0; transform: translateY(30px); transition: opacity 1s ease 0.6s, transform 1s ease 0.6s; }
+    .hero-photo-strip.visible { opacity: 1; transform: translateY(0); }
+    .strip-photo { border-radius: 1rem; overflow: hidden; box-shadow: 0 8px 40px rgba(0,0,0,0.55); border: 1.5px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+    .strip-photo:nth-child(1) { width: 160px; height: 115px; transform: rotate(-3deg); }
+    .strip-photo:nth-child(2) { width: 190px; height: 135px; transform: rotate(0deg) translateY(-12px); z-index: 2; }
+    .strip-photo:nth-child(3) { width: 160px; height: 115px; transform: rotate(3deg); }
+    .strip-photo img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    .hero-scroll-hint { position: absolute; bottom: 1.5rem; left: 50%; transform: translateX(-50%); display: flex; flex-direction: column; align-items: center; gap: 0.4rem; color: rgba(253,240,242,0.45); font-size: 0.65rem; letter-spacing: 0.15em; text-transform: uppercase; animation: bounce 2s infinite; z-index: 3; }
+    @keyframes bounce { 0%,100%{transform:translateX(-50%) translateY(0)} 50%{transform:translateX(-50%) translateY(6px)} }
+
+    /* SECTIONS */
+    section { padding: 5rem 2rem; }
+    .container { max-width: 1100px; margin: 0 auto; }
+    .eyebrow { font-size: 0.75rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--pink); margin-bottom: 0.75rem; }
+    .section-title { font-family: 'Playfair Display', serif; font-size: clamp(2rem, 5vw, 3rem); font-weight: 800; color: var(--cream); margin-bottom: 1rem; }
+    .gradient-text { background: linear-gradient(135deg, #4EC8A0, #2A9B7A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+    /* ── CREATIVE CARD STYLE ── */
+    .wwd-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+    .wwd-card { position:relative; padding:0; overflow:hidden; background:#0d1a15; border:1px solid rgba(42,155,122,0.2); border-radius:1.5rem; transition:transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
+    .wwd-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:var(--card-accent,linear-gradient(90deg,#2A9B7A,#4EC8A0)); border-radius:1.5rem 1.5rem 0 0; }
+    .wwd-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(42,155,122,0.22); border-color:rgba(42,155,122,0.45); }
+    .wwd-card:nth-child(1){--card-accent:linear-gradient(90deg,#2A9B7A,#3DAE90);} .wwd-card:nth-child(2){--card-accent:linear-gradient(90deg,#1A7A60,#4EC8A0);} .wwd-card:nth-child(3){--card-accent:linear-gradient(90deg,#4EC8A0,#70D4B8);} .wwd-card:nth-child(4){--card-accent:linear-gradient(90deg,#0F6050,#2A9B7A);}
+    .wwd-card-inner { padding:2rem 1.75rem; }
+    .wwd-icon-badge { display:inline-flex; align-items:center; justify-content:center; width:48px; height:48px; border-radius:0.9rem; background:rgba(42,155,122,0.15); border:1px solid rgba(42,155,122,0.25); font-size:1.4rem; margin-bottom:1.25rem; }
+    .wwd-card h3 { font-size:1.05rem; font-weight:700; color:var(--cream); margin-bottom:0.6rem; font-family:'Playfair Display',serif; }
+    .wwd-card p { font-size:0.83rem; color:rgba(253,240,242,0.58); line-height:1.65; margin-bottom:1.25rem; }
+    .wwd-card-tag { display:inline-block; padding:0.25rem 0.75rem; background:rgba(42,155,122,0.12); border:1px solid rgba(42,155,122,0.25); border-radius:2rem; font-size:0.7rem; color:var(--pink); letter-spacing:0.06em; }
+
+    /* TEAM */
+    .team-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:1.5rem; margin-top:2.5rem; }
+    .team-card { position:relative; padding:0; overflow:hidden; text-align:center; background:#0d1a15; border:1px solid rgba(42,155,122,0.2); border-radius:1.5rem; transition:transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
+    .team-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2A9B7A,#4EC8A0); border-radius:1.5rem 1.5rem 0 0; }
+    .team-card:hover { transform:translateY(-6px); box-shadow:0 20px 50px rgba(42,155,122,0.22); border-color:rgba(42,155,122,0.45); }
+    .team-card-inner { padding:2rem 1.25rem; }
+    .team-avatar { width:80px; height:80px; border-radius:50%; overflow:hidden; margin:0 auto 1rem; box-shadow:0 0 0 3px rgba(42,155,122,0.35); }
+    .team-avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+    .team-card h4 { font-size:0.9rem; font-weight:700; color:var(--cream); margin-bottom:0.4rem; }
+    .team-card p { font-size:0.72rem; display:inline-block; padding:0.2rem 0.7rem; background:rgba(42,155,122,0.12); border:1px solid rgba(42,155,122,0.25); border-radius:2rem; color:var(--pink); }
+
+    /* GALLERY */
+    .gallery-tiles { display: flex; align-items: flex-end; justify-content: center; gap: 1rem; flex-wrap: wrap; margin-top: 2.5rem; }
+    .g-tile { border-radius: 1.25rem; overflow: hidden; box-shadow: 0 6px 30px rgba(0,0,0,0.4); flex-shrink: 0; transition: transform 0.45s cubic-bezier(0.34,1.56,0.64,1), box-shadow 0.45s; }
+    .g-tile:nth-child(1) { width: 200px; height: 260px; transform: rotate(-5deg) translateY(20px); }
+    .g-tile:nth-child(2) { width: 220px; height: 300px; transform: rotate(0deg); z-index: 2; }
+    .g-tile:nth-child(3) { width: 200px; height: 260px; transform: rotate(5deg) translateY(20px); }
+    .g-tile:hover { transform: rotate(0deg) translateY(-10px) scale(1.04) !important; box-shadow: 0 16px 50px rgba(42,155,122,0.4); z-index: 5; }
+    .g-tile img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+    /* JOIN */
+    .join-box { max-width: 640px; margin: 0 auto; text-align: center; padding: 3.5rem 3rem; background: rgba(42,155,122,0.07); border: 1px solid rgba(42,155,122,0.2); border-radius: 2rem; }
+    .join-box p { color: rgba(253,240,242,0.65); font-size: 0.95rem; line-height: 1.7; margin: 1rem 0 2rem; }
+    .join-btn { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.9rem 2rem; border-radius: 3rem; background: #25D366; color: #fff; font-weight: 600; font-size: 0.95rem; text-decoration: none; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 4px 20px rgba(37,211,102,0.3); }
+    .join-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(37,211,102,0.4); }
+
+    footer { text-align: center; padding: 2rem; border-top: 1px solid rgba(42,155,122,0.12); color: rgba(253,240,242,0.35); font-size: 0.8rem; }
+    footer a { color: var(--pink); text-decoration: none; }
+
+    /* IMPACT STATS — creative card style */
+    .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+    .stat-box { position:relative; overflow:hidden; text-align:center; padding:2.25rem 1rem; background:#0d1a15; border:1px solid rgba(42,155,122,0.2); border-radius:1.5rem; transition:transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
+    .stat-box::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2A9B7A,#4EC8A0); border-radius:1.5rem 1.5rem 0 0; }
+    .stat-box:hover { transform:translateY(-5px); box-shadow:0 18px 45px rgba(42,155,122,0.2); border-color:rgba(42,155,122,0.4); }
+    .stat-box strong { display:block; font-family:'Playfair Display',serif; font-size:2.6rem; font-weight:800; background:linear-gradient(135deg,#FDF0F2,#4EC8A0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1; }
+    .stat-box span { font-size:0.75rem; color:rgba(253,240,242,0.5); letter-spacing:0.1em; text-transform:uppercase; margin-top:0.55rem; display:block; }
+    /* HOW WE WORK — creative card style */
+    .process-steps { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+    .process-step { position:relative; overflow:hidden; padding:2rem 1.75rem; background:#0d1a15; border:1px solid rgba(42,155,122,0.2); border-radius:1.5rem; transition:transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
+    .process-step::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; border-radius:1.5rem 1.5rem 0 0; }
+    .process-step:nth-child(1)::before{background:linear-gradient(90deg,#2A9B7A,#3DAE90);} .process-step:nth-child(2)::before{background:linear-gradient(90deg,#1A7A60,#4EC8A0);} .process-step:nth-child(3)::before{background:linear-gradient(90deg,#4EC8A0,#70D4B8);} .process-step:nth-child(4)::before{background:linear-gradient(90deg,#0F6050,#2A9B7A);}
+    .process-step:hover { transform:translateY(-5px); box-shadow:0 18px 45px rgba(42,155,122,0.2); border-color:rgba(42,155,122,0.4); }
+    .step-num { font-family:'Playfair Display',serif; font-size:2.5rem; font-weight:800; background:linear-gradient(135deg,#2A9B7A,#4EC8A0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; line-height:1; margin-bottom:0.85rem; }
+    .process-step h3 { font-size:1rem; font-weight:700; color:var(--cream); margin-bottom:0.5rem; font-family:'Playfair Display',serif; }
+    .process-step p { font-size:0.82rem; color:rgba(253,240,242,0.55); line-height:1.65; }
+    /* WHY JOIN — creative card style */
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+    .why-card { position:relative; overflow:hidden; padding:2rem 1.75rem; background:#0d1a15; border:1px solid rgba(42,155,122,0.2); border-radius:1.5rem; display:flex; gap:1.25rem; align-items:flex-start; transition:transform 0.35s, box-shadow 0.35s, border-color 0.35s; }
+    .why-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; background:linear-gradient(90deg,#2A9B7A,#4EC8A0); border-radius:1.5rem 1.5rem 0 0; }
+    .why-card:hover { transform:translateY(-5px); box-shadow:0 18px 45px rgba(42,155,122,0.2); border-color:rgba(42,155,122,0.4); }
+    .why-icon { font-size:1.6rem; flex-shrink:0; display:flex; align-items:center; justify-content:center; width:44px; height:44px; border-radius:0.75rem; background:rgba(42,155,122,0.12); border:1px solid rgba(42,155,122,0.2); }
+    .why-card h3 { font-size:0.95rem; font-weight:700; color:var(--cream); margin-bottom:0.4rem; font-family:'Playfair Display',serif; }
+    .why-card p { font-size:0.82rem; color:rgba(253,240,242,0.55); line-height:1.65; }
+
+    /* ══════════════════════════════════════════
+       OUTREACH — Community / Human Design
+       Stats: large circular badges
+       Process: vertical timeline with left line
+       Why: icon-on-top centered columns
+       ══════════════════════════════════════════ */
+    body { background: radial-gradient(ellipse at 80% 15%, rgba(42,155,122,0.35) 0%, transparent 50%), radial-gradient(ellipse at 20% 80%, rgba(78,200,160,0.2) 0%, transparent 45%), #000E08; }
+
+    /* Stats — circular badges */
+    .stats-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 2.5rem; margin-top: 2.5rem; }
+    .stat-box { border-radius: 50%; width: 140px; height: 140px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 0; border: 2px solid rgba(42,155,122,0.35); background: rgba(42,155,122,0.07); flex-shrink: 0; }
+    .stat-box::before { display: none; }
+    .stat-box:hover { transform: translateY(-6px) scale(1.05); box-shadow: 0 20px 50px rgba(42,155,122,0.25); border-color: #4EC8A0; }
+    .stat-box strong { font-size: 2rem; background: linear-gradient(135deg,#F0FFFA,#4EC8A0); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+    .stat-box span { font-size: 0.65rem; text-align: center; padding: 0 0.5rem; }
+
+    /* Process — vertical left-line timeline */
+    .process-steps { display: flex; flex-direction: column; gap: 0; margin-top: 2.5rem; position: relative; padding-left: 2rem; border-left: 2px solid rgba(42,155,122,0.2); margin-left: 1.5rem; }
+    .process-step { background: transparent; border: none; border-radius: 0; padding: 0 0 2.5rem 2.5rem; position: relative; }
+    .process-step::before { content: ''; position: absolute; left: -1.6rem; top: 0.6rem; width: 14px; height: 14px; border-radius: 50%; background: #2A9B7A; border: 3px solid var(--dark); box-shadow: 0 0 0 2px rgba(42,155,122,0.4); z-index: 1; }
+    .process-step:hover { transform: none; box-shadow: none; }
+    .process-step:hover::before { background: #4EC8A0; box-shadow: 0 0 0 4px rgba(42,155,122,0.3); }
+    .step-num { font-family: 'Inter',sans-serif; font-size: 0.65rem; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; color: #2A9B7A; margin-bottom: 0.35rem; display: block; }
+    .process-step h3 { font-size: 1.05rem; margin-bottom: 0.4rem; }
+    .process-step p { font-size: 0.83rem; max-width: 480px; }
+
+    /* Why Join — icon-top centered cards */
+    .why-grid { display: grid; grid-template-columns: repeat(auto-fit,minmax(200px,1fr)); gap: 1.5rem; margin-top: 2.5rem; }
+    .why-card { flex-direction: column; align-items: center; text-align: center; border-color: rgba(42,155,122,0.2); }
+    .why-card::before { display: none; }
+    .why-card:hover { box-shadow: 0 18px 45px rgba(42,155,122,0.18); border-color: rgba(42,155,122,0.5); }
+    .why-icon { margin-bottom: 1rem; width: 54px; height: 54px; font-size: 1.8rem; border-radius: 50%; }
+
+    /* Nav / Hero */
+    .hero-eyebrow { background: rgba(42,155,122,0.12); border-color: rgba(42,155,122,0.3); }
+    .hero-cta { background: rgba(42,155,122,0.12); border-color: rgba(42,155,122,0.4); }
+    .hero-cta:hover { background: rgba(42,155,122,0.4); }
+    .nav-back { background: rgba(42,155,122,0.1); border-color: rgba(42,155,122,0.3); }
+    .nav-back:hover { background: rgba(42,155,122,0.3); }
+  </style>
+</head>
+<body>
+
+  <nav>
+    <a class="nav-logo" href="index.html">
+      <img src="logo2.png" alt="H4H" />
+      <span>Hearts For Humanity</span>
+    </a>
+    <div class="nav-links">
+      <a href="pr.html">PR</a>
+      <a href="organizing.html">Organizing</a>
+      <a href="outreach.html" class="active">Outreach</a>
+      <a href="content.html">Content</a>
+      <a href="volunteering.html">Volunteering</a>
+      <a href="index.html" class="nav-back" data-i18n="mainSite">← Main Site</a>
+      <div class="lang-toggle">
+        <span class="lang-lbl on">EN</span>
+        <div class="lever-wrap" id="lever">
+          <div class="lever-housing"></div>
+          <div class="lever-arm"></div>
+        </div>
+        <span class="lang-lbl">AR</span>
+      </div>
+    </div>
+  </nav>
+
+  <!-- CINEMATIC HERO -->
+  <section class="hero" id="hero">
+    <div class="hero-bg-img" id="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-content" id="hero-content">
+      <div class="hero-eyebrow" data-i18n="heroEyebrow">H4H Subteam · Outreach</div>
+      <h1 data-i18n="heroH1">Reaching<br><span>Those Who Need Us</span></h1>
+      <p data-i18n="heroP">We find the people who need us, build the partnerships that sustain us, and expand H4H's reach one connection at a time.</p>
+      <a href="#join" class="hero-cta" data-i18n="heroCta">Join the Outreach Team</a>
+    </div>
+    <div class="hero-photo-strip" id="hero-strip">
+      <div class="strip-photo"><img src="galary/Screenshot 2026-06-24 214036.png" alt="H4H Outreach" /></div>
+      <div class="strip-photo"><img src="galary/Screenshot 2026-06-24 214057.png" alt="H4H Outreach" /></div>
+      <div class="strip-photo"><img src="galary/Screenshot 2026-06-24 215301.png" alt="H4H Outreach" /></div>
+    </div>
+    <div class="hero-scroll-hint">
+      <span>Scroll</span>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+    </div>
+  </section>
+  <script>
+    window.addEventListener('load', function() {
+      document.getElementById('hero-bg').classList.add('loaded');
+      setTimeout(function() {
+        document.getElementById('hero-content').classList.add('visible');
+        document.getElementById('hero-strip').classList.add('visible');
+      }, 100);
+    });
+  </script>
+
+  <!-- WHAT WE DO -->
+  <section>
+    <div class="container">
+      <p class="eyebrow" data-i18n="wwdEyebrow">✦ Our Role ✦</p>
+      <h2 class="section-title" data-i18n="wwdTitle">What We <span class="gradient-text">Do</span></h2>
+      <div class="wwd-grid">
+        <div class="wwd-card"><div class="wwd-card-inner"><div class="wwd-icon-badge">🤝</div><h3 data-i18n="card1Title">Finding Beneficiaries</h3><p data-i18n="card1P">Identifying families and communities in need and connecting them with H4H's initiatives and resources.</p><span class="wwd-card-tag" data-i18n="card1Tag">Families · Communities · Need</span></div></div>
+        <div class="wwd-card"><div class="wwd-card-inner"><div class="wwd-icon-badge">🌐</div><h3 data-i18n="card2Title">Partnerships</h3><p data-i18n="card2P">Building relationships with NGOs, mosques, schools, and community organizations to expand our reach.</p><span class="wwd-card-tag" data-i18n="card2Tag">NGOs · Mosques · Schools</span></div></div>
+        <div class="wwd-card"><div class="wwd-card-inner"><div class="wwd-icon-badge">💼</div><h3 data-i18n="card3Title">Donor Relations</h3><p data-i18n="card3P">Reaching out to potential donors and sponsors who can support H4H's drives and initiatives financially.</p><span class="wwd-card-tag" data-i18n="card3Tag">Donors · Sponsors · Funding</span></div></div>
+        <div class="wwd-card"><div class="wwd-card-inner"><div class="wwd-icon-badge">📍</div><h3 data-i18n="card4Title">Community Mapping</h3><p data-i18n="card4P">Scouting new areas, neighborhoods, and regions where H4H's presence can make a real difference.</p><span class="wwd-card-tag" data-i18n="card4Tag">Scouting · Areas · Impact</span></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- IMPACT STATS -->
+  <section style="background:rgba(42,155,122,0.04);">
+    <div class="container">
+      <p class="eyebrow" data-i18n="statsEyebrow">✦ Our Numbers ✦</p>
+      <h2 class="section-title" data-i18n="statsTitle">The <span class="gradient-text">Reach</span> We've Built</h2>
+      <div class="stats-row">
+        <div class="stat-box"><strong>500+</strong><span data-i18n="stat1">Families Reached</span></div>
+        <div class="stat-box"><strong>20+</strong><span data-i18n="stat2">Partner Organizations</span></div>
+        <div class="stat-box"><strong>3+</strong><span data-i18n="stat3">Cities Mapped</span></div>
+        <div class="stat-box"><strong>100%</strong><span data-i18n="stat4">Community-Driven</span></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW WE WORK -->
+  <section>
+    <div class="container">
+      <p class="eyebrow" data-i18n="processEyebrow">✦ Our Process ✦</p>
+      <h2 class="section-title" data-i18n="processTitle">How We <span class="gradient-text">Connect</span></h2>
+      <div class="process-steps">
+        <div class="process-step"><div class="step-num">01</div><h3 data-i18n="step1Title">Identify the Need</h3><p data-i18n="step1P">We scout communities, map neighborhoods, and identify families or groups that need H4H's support most.</p></div>
+        <div class="process-step"><div class="step-num">02</div><h3 data-i18n="step2Title">Build the Bridge</h3><p data-i18n="step2P">We reach out to community leaders, NGOs, and local organizations to establish trusted connections.</p></div>
+        <div class="process-step"><div class="step-num">03</div><h3 data-i18n="step3Title">Engage &amp; Support</h3><p data-i18n="step3P">We connect beneficiaries directly with H4H initiatives — events, drives, and resources tailored to their needs.</p></div>
+        <div class="process-step"><div class="step-num">04</div><h3 data-i18n="step4Title">Sustain the Relationship</h3><p data-i18n="step4P">We maintain long-term ties with communities so H4H's presence grows roots, not just visits.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY JOIN -->
+  <section style="background:rgba(42,155,122,0.04);">
+    <div class="container">
+      <p class="eyebrow" data-i18n="whyEyebrow">✦ Why Us ✦</p>
+      <h2 class="section-title" data-i18n="whyTitle">Why Join <span class="gradient-text">Outreach</span></h2>
+      <div class="why-grid">
+        <div class="why-card"><div class="why-icon">🌍</div><div><h3 data-i18n="why1Title">See the World Up Close</h3><p data-i18n="why1P">You'll work directly with communities, families, and organizations — building empathy and real-world perspective.</p></div></div>
+        <div class="why-card"><div class="why-icon">🤝</div><div><h3 data-i18n="why2Title">Grow Your Network</h3><p data-i18n="why2P">Build meaningful relationships with NGOs, donors, and community leaders across Saudi Arabia.</p></div></div>
+        <div class="why-card"><div class="why-icon">💬</div><div><h3 data-i18n="why3Title">Develop Communication Skills</h3><p data-i18n="why3P">Practice outreach, negotiation, and relationship management in a real, purpose-driven environment.</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- MEET THE TEAM -->
+  <section style="background:rgba(42,155,122,0.04);">
+    <div class="container">
+      <p class="eyebrow" data-i18n="teamEyebrow">✦ The People ✦</p>
+      <h2 class="section-title" data-i18n="teamTitle">Meet the <span class="gradient-text">Outreach Team</span></h2>
+      <div class="team-grid">
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.57 PM (2).jpeg" alt="Lara Samhan" /></div><h4>Lara Samhan</h4><p>President</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.57 PM (1).jpeg" alt="Ziad Alhosainy" /></div><h4>Ziad Alhosainy</h4><p>Vice President</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.57 PM.jpeg" alt="Sarah Alsaleh" /></div><h4>Sarah Alsaleh</h4><p>General Secretary</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.56 PM (3).jpeg" alt="Payam Seydo" /></div><h4>Payam Seydo</h4><p>Treasurer</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.56 PM (2).jpeg" alt="Sara Samhan" /></div><h4>Sara Samhan</h4><p>Coordinator</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.56 PM (1).jpeg" alt="Houriyah Nukaly" /></div><h4>Houriyah Nukaly</h4><p>Jeddah Coordinator</p></div></div>
+        <div class="team-card"><div class="team-card-inner"><div class="team-avatar"><img src="h4h members/WhatsApp Image 2026-06-24 at 10.23.56 PM.jpeg" alt="Haider Alomishi" /></div><h4>Haider Alomishi</h4><p>Al-Ahsa Coordinator</p></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- GALLERY -->
+  <section>
+    <div class="container">
+      <p class="eyebrow">✦ Our Work ✦</p>
+      <h2 class="section-title">Captured <span class="gradient-text">Moments</span></h2>
+      <div class="gallery-tiles">
+        <div class="g-tile"><img src="galary/Screenshot 2026-06-24 213852.png" alt="H4H Outreach" loading="lazy" /></div>
+        <div class="g-tile"><img src="galary/Screenshot 2026-06-24 215628.png" alt="H4H Outreach" loading="lazy" /></div>
+        <div class="g-tile"><img src="galary/Screenshot 2026-06-24 215709.png" alt="H4H Outreach" loading="lazy" /></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- JOIN -->
+  <section id="join">
+    <div class="container">
+      <div class="join-box">
+        <p class="eyebrow" data-i18n="joinEyebrow">✦ Get Involved ✦</p>
+        <h2 class="section-title" data-i18n="joinTitle">Join the <span class="gradient-text">Outreach Team</span></h2>
+        <p data-i18n="joinP">Are you someone who connects easily with people and cares deeply about community? The Outreach team needs you.</p>
+        <a href="https://wa.me/966509903051?text=Hi%2C%20I'm%20interested%20in%20joining%20the%20H4H%20Outreach%20Team!" class="join-btn" target="_blank">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/></svg>
+          <span data-i18n="joinBtn">Message Us on WhatsApp</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <p data-i18n="footer">Outreach Team · <a href="index.html">Hearts For Humanity — H4H KSA</a> · Alfaisal University, Riyadh</p>
+  </footer>
+
+<script>
+const i18n = {
+  en: {
+    heroEyebrow: 'H4H Subteam · Outreach',
+    heroH1: 'Reaching<br><span>Those Who Need Us</span>',
+    heroP: "We find the people who need us, build the partnerships that sustain us, and expand H4H's reach one connection at a time.",
+    heroCta: 'Join the Outreach Team',
+    mainSite: '← Main Site',
+    wwdEyebrow: '✦ Our Role ✦',
+    wwdTitle: 'What We <span class="gradient-text">Do</span>',
+    card1Title: 'Finding Beneficiaries', card1P: "Identifying families and communities in need and connecting them with H4H's initiatives and resources.", card1Tag: 'Families · Communities · Need',
+    card2Title: 'Partnerships', card2P: 'Building relationships with NGOs, mosques, schools, and community organizations to expand our reach.', card2Tag: 'NGOs · Mosques · Schools',
+    card3Title: 'Donor Relations', card3P: "Reaching out to potential donors and sponsors who can support H4H's drives and initiatives financially.", card3Tag: 'Donors · Sponsors · Funding',
+    card4Title: 'Community Mapping', card4P: "Scouting new areas, neighborhoods, and regions where H4H's presence can make a real difference.", card4Tag: 'Scouting · Areas · Impact',
+    statsEyebrow: '✦ Our Numbers ✦', statsTitle: 'The <span class="gradient-text">Reach</span> We\'ve Built',
+    stat1: 'Families Reached', stat2: 'Partner Organizations', stat3: 'Cities Mapped', stat4: 'Community-Driven',
+    processEyebrow: '✦ Our Process ✦', processTitle: 'How We <span class="gradient-text">Connect</span>',
+    step1Title: 'Identify the Need', step1P: "We scout communities, map neighborhoods, and identify families or groups that need H4H's support most.",
+    step2Title: 'Build the Bridge', step2P: 'We reach out to community leaders, NGOs, and local organizations to establish trusted connections.',
+    step3Title: 'Engage & Support', step3P: 'We connect beneficiaries directly with H4H initiatives — events, drives, and resources tailored to their needs.',
+    step4Title: 'Sustain the Relationship', step4P: "We maintain long-term ties with communities so H4H's presence grows roots, not just visits.",
+    whyEyebrow: '✦ Why Us ✦', whyTitle: 'Why Join <span class="gradient-text">Outreach</span>',
+    why1Title: 'See the World Up Close', why1P: "You'll work directly with communities, families, and organizations — building empathy and real-world perspective.",
+    why2Title: 'Grow Your Network', why2P: 'Build meaningful relationships with NGOs, donors, and community leaders across Saudi Arabia.',
+    why3Title: 'Develop Communication Skills', why3P: 'Practice outreach, negotiation, and relationship management in a real, purpose-driven environment.',
+    teamEyebrow: '✦ The People ✦', teamTitle: 'Meet the <span class="gradient-text">Outreach Team</span>',
+    joinEyebrow: '✦ Get Involved ✦', joinTitle: 'Join the <span class="gradient-text">Outreach Team</span>',
+    joinP: "Are you someone who connects easily with people and cares deeply about community? The Outreach team needs you.",
+    joinBtn: 'Message Us on WhatsApp',
+    footer: 'Outreach Team · <a href="index.html">Hearts For Humanity — H4H KSA</a> · Alfaisal University, Riyadh',
+  },
+  ar: {
+    heroEyebrow: 'فريق H4H · التواصل المجتمعي',
+    heroH1: 'نصل إلى<br><span>من يحتاجنا</span>',
+    heroP: 'نجد من يحتاج المساعدة، نبني الشراكات التي تدعمنا، ونوسّع تأثير H4H اتصالاً تلو الآخر.',
+    heroCta: 'انضم لفريق التواصل',
+    mainSite: 'الموقع الرئيسي ←',
+    wwdEyebrow: '✦ دورنا ✦',
+    wwdTitle: 'ما <span class="gradient-text">نقوم به</span>',
+    card1Title: 'إيجاد المستفيدين', card1P: 'تحديد العائلات والمجتمعات المحتاجة وربطها بمبادرات H4H وموارده.', card1Tag: 'عائلات · مجتمعات · احتياج',
+    card2Title: 'الشراكات', card2P: 'بناء علاقات مع المنظمات غير الحكومية والمساجد والمدارس لتوسيع نطاق وصولنا.', card2Tag: 'منظمات · مساجد · مدارس',
+    card3Title: 'علاقات المانحين', card3P: 'التواصل مع المانحين والرعاة المحتملين لدعم مبادرات H4H مالياً.', card3Tag: 'مانحون · رعاة · تمويل',
+    card4Title: 'رسم خريطة المجتمع', card4P: 'استكشاف مناطق وأحياء جديدة حيث يمكن لـ H4H إحداث فرق حقيقي.', card4Tag: 'استكشاف · مناطق · تأثير',
+    statsEyebrow: '✦ أرقامنا ✦', statsTitle: 'النطاق <span class="gradient-text">الذي بنيناه</span>',
+    stat1: 'عائلة وصلنا إليها', stat2: 'منظمة شريكة', stat3: 'مدن مرسومة', stat4: 'مجتمعي بالكامل',
+    processEyebrow: '✦ عمليتنا ✦', processTitle: 'كيف <span class="gradient-text">نتواصل</span>',
+    step1Title: 'تحديد الاحتياج', step1P: 'نستكشف المجتمعات ونرسم خريطة الأحياء ونحدد العائلات الأكثر حاجة لدعم H4H.',
+    step2Title: 'بناء الجسر', step2P: 'نتواصل مع قادة المجتمع والمنظمات غير الحكومية لإقامة روابط موثوقة.',
+    step3Title: 'التفاعل والدعم', step3P: 'نربط المستفيدين مباشرة بمبادرات H4H من فعاليات وحملات وموارد مصممة لاحتياجاتهم.',
+    step4Title: 'استدامة العلاقة', step4P: 'نحافظ على الروابط طويلة الأمد مع المجتمعات حتى يترسخ وجود H4H.',
+    whyEyebrow: '✦ لماذا نحن ✦', whyTitle: 'لماذا تنضم لـ <span class="gradient-text">التواصل</span>',
+    why1Title: 'رؤية العالم عن قرب', why1P: 'ستعمل مباشرة مع المجتمعات والعائلات والمنظمات — بناء التعاطف والمنظور الواقعي.',
+    why2Title: 'توسيع شبكة علاقاتك', why2P: 'ابنِ علاقات هادفة مع المنظمات غير الحكومية والمانحين وقادة المجتمع في السعودية.',
+    why3Title: 'تطوير مهارات التواصل', why3P: 'مارس التواصل والتفاوض وإدارة العلاقات في بيئة هادفة وحقيقية.',
+    teamEyebrow: '✦ الفريق ✦', teamTitle: 'تعرّف على <span class="gradient-text">فريق التواصل</span>',
+    joinEyebrow: '✦ انضم إلينا ✦', joinTitle: 'انضم لـ <span class="gradient-text">فريق التواصل</span>',
+    joinP: 'هل أنت شخص يتواصل بسهولة مع الناس ويهتم بالمجتمع؟ فريق التواصل يحتاجك.',
+    joinBtn: 'راسلنا على واتساب',
+    footer: 'فريق التواصل · <a href="index.html">قلوب من أجل الإنسانية — H4H KSA</a> · جامعة الفيصل، الرياض',
+  }
+};
+
+let lang = 'en';
+const lever = document.getElementById('lever');
+const lbls = document.querySelectorAll('.lang-lbl');
+
+function applyLang(l) {
+  lang = l;
+  document.documentElement.setAttribute('dir', l === 'ar' ? 'rtl' : 'ltr');
+  document.documentElement.setAttribute('lang', l);
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const k = el.getAttribute('data-i18n');
+    if (i18n[l][k] !== undefined) el.innerHTML = i18n[l][k];
+  });
+  lever.classList.toggle('ar', l === 'ar');
+  lbls[0].classList.toggle('on', l === 'en');
+  lbls[1].classList.toggle('on', l === 'ar');
+}
+
+lever.addEventListener('click', () => applyLang(lang === 'en' ? 'ar' : 'en'));
+lbls[0].addEventListener('click', () => applyLang('en'));
+lbls[1].addEventListener('click', () => applyLang('ar'));
+</script>
+
+</body>
+</html>

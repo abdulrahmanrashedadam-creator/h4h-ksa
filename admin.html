@@ -1,0 +1,1692 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>H4H Admin</title>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet" />
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: #12060A;
+      color: #FDF0F2;
+      min-height: 100vh;
+    }
+
+    /* ── SHARED BACKGROUND ── */
+    .bg-layer {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse at 60% 20%, rgba(181,96,106,0.22) 0%, transparent 65%),
+        radial-gradient(ellipse at 10% 80%, rgba(181,96,106,0.12) 0%, transparent 55%),
+        #12060A;
+    }
+
+    /* Logo watermark behind everything */
+    .bg-layer::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: url('logo2.png') center center / 800px 800px no-repeat;
+      opacity: 0.06;
+      filter: grayscale(1);
+      pointer-events: none;
+    }
+
+    /* Grid lines like main site */
+    .bg-layer::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(181,96,106,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(181,96,106,0.05) 1px, transparent 1px);
+      background-size: 60px 60px;
+      pointer-events: none;
+    }
+
+    /* ── LOGIN PAGE ── */
+    #login-page {
+      position: relative;
+      z-index: 1;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem;
+    }
+
+    /* Logo above card */
+    .login-logo {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 2rem;
+    }
+    .login-logo img {
+      width: 72px;
+      height: 72px;
+      border-radius: 1.25rem;
+      border: 2px solid rgba(181,96,106,0.35);
+      box-shadow: 0 0 30px rgba(181,96,106,0.3);
+      object-fit: cover;
+    }
+    .login-logo span {
+      font-family: 'Playfair Display', serif;
+      font-size: 1rem;
+      font-weight: 700;
+      color: rgba(253,240,242,0.75);
+      letter-spacing: 0.04em;
+    }
+
+    .login-card {
+      background: rgba(18,6,10,0.72);
+      border: 1px solid rgba(181,96,106,0.25);
+      border-radius: 1.5rem;
+      padding: 2.5rem 2.5rem;
+      width: 100%;
+      max-width: 420px;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: 0 20px 60px rgba(0,0,0,0.6), 0 0 0 1px rgba(181,96,106,0.1);
+    }
+
+    .login-card h1 {
+      font-family: 'Playfair Display', serif;
+      font-size: 1.8rem;
+      font-weight: 900;
+      margin-bottom: 0.4rem;
+      background: linear-gradient(135deg, #D4848E, #B5606A, #FDF0F2);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .login-card p { font-size: 0.85rem; color: rgba(253,240,242,0.4); margin-bottom: 2rem; }
+
+    .field { margin-bottom: 1.25rem; }
+
+    .field label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(253,240,242,0.4);
+      margin-bottom: 0.5rem;
+    }
+
+    .field input {
+      width: 100%;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(181,96,106,0.2);
+      border-radius: 0.75rem;
+      padding: 0.85rem 1rem;
+      color: #FDF0F2;
+      font-size: 0.95rem;
+      outline: none;
+      transition: border-color 0.3s, background 0.3s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .field input:focus {
+      border-color: #B5606A;
+      background: rgba(181,96,106,0.08);
+    }
+
+    #login-error {
+      display: none;
+      background: rgba(220,50,50,0.12);
+      border: 1px solid rgba(220,50,50,0.35);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.85rem;
+      color: #ff8080;
+      margin-bottom: 1.25rem;
+    }
+
+    .lockout-warning {
+      background: rgba(255,140,0,0.1);
+      border: 1px solid rgba(255,140,0,0.3);
+      border-radius: 0.75rem;
+      padding: 0.75rem 1rem;
+      font-size: 0.82rem;
+      color: #ffb347;
+      margin-bottom: 1rem;
+      display: none;
+    }
+
+    .btn-primary {
+      width: 100%;
+      padding: 1rem;
+      background: linear-gradient(135deg, #B5606A, #D4848E);
+      border: none;
+      border-radius: 9999px;
+      color: #12060A;
+      font-weight: 800;
+      font-size: 0.95rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+      box-shadow: 0 4px 24px rgba(181,96,106,0.45);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: 0.04em;
+    }
+
+    .btn-primary:hover { opacity: 0.9; transform: translateY(-2px); }
+    .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── DASHBOARD ── */
+    #dashboard { display: none; position: relative; z-index: 1; }
+
+    .topbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(18,6,10,0.85);
+      border-bottom: 1px solid rgba(181,96,106,0.18);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .topbar-logo { display: flex; align-items: center; gap: 0.75rem; }
+    .topbar-logo img { width: 36px; height: 36px; border-radius: 0.6rem; object-fit: cover; border: 1px solid rgba(181,96,106,0.3); }
+    .topbar-brand { font-family: 'Playfair Display', serif; font-size: 1.1rem; font-weight: 900; background: linear-gradient(135deg, #D4848E, #B5606A); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .topbar-right { display: flex; align-items: center; gap: 1rem; }
+    .topbar-email { font-size: 0.8rem; color: rgba(253,240,242,0.4); }
+
+    .session-timer {
+      font-size: 0.75rem;
+      color: rgba(253,240,242,0.35);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(181,96,106,0.15);
+      border-radius: 9999px;
+      padding: 0.3rem 0.75rem;
+    }
+
+    .session-timer.warning { color: #ffb347; border-color: rgba(255,140,0,0.35); }
+
+    .btn-logout {
+      padding: 0.5rem 1.25rem;
+      background: rgba(181,96,106,0.12);
+      border: 1px solid rgba(181,96,106,0.35);
+      border-radius: 9999px;
+      color: #D4848E;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      font-family: 'Inter', sans-serif;
+    }
+    .btn-logout:hover { background: rgba(181,96,106,0.25); }
+
+    .dashboard-body { padding: 2rem; max-width: 1200px; margin: 0 auto; }
+
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 1rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: rgba(18,6,10,0.55);
+      border: 1px solid rgba(181,96,106,0.18);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-card .num { font-size: 2.5rem; font-weight: 800; color: #D4848E; line-height: 1; }
+    .stat-card .label { font-size: 0.75rem; color: rgba(253,240,242,0.4); text-transform: uppercase; letter-spacing: 0.08em; margin-top: 0.4rem; }
+
+    .section-title { font-size: 1.1rem; font-weight: 700; margin-bottom: 1rem; color: #FDF0F2; }
+
+    .table-wrap {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(181,96,106,0.15);
+      border-radius: 1rem;
+      overflow: hidden;
+    }
+
+    table { width: 100%; border-collapse: collapse; }
+
+    thead th {
+      text-align: left;
+      padding: 1rem 1.25rem;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: rgba(253,246,227,0.4);
+      border-bottom: 1px solid rgba(181,96,106,0.15);
+      background: rgba(255,255,255,0.02);
+    }
+
+    tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.2s; }
+    tbody tr:last-child { border-bottom: none; }
+    tbody tr:hover { background: rgba(181,96,106,0.05); }
+    tbody td { padding: 1rem 1.25rem; font-size: 0.88rem; color: rgba(253,246,227,0.85); vertical-align: top; }
+
+    .badge { display: inline-block; padding: 0.2rem 0.65rem; border-radius: 9999px; font-size: 0.7rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+    .badge-volunteer { background: rgba(181,96,106,0.2); color: #D4848E; }
+    .badge-donate    { background: rgba(50,200,100,0.15); color: #6ee89a; }
+    .badge-both      { background: rgba(100,150,255,0.15); color: #90b4ff; }
+
+    .empty-state { text-align: center; padding: 4rem 2rem; color: rgba(253,246,227,0.3); font-size: 0.9rem; }
+
+    .refresh-btn {
+      padding: 0.5rem 1.25rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 9999px;
+      color: rgba(253,246,227,0.6);
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 1rem;
+    }
+    .refresh-btn:hover { background: rgba(255,255,255,0.1); }
+
+    .export-btn {
+      padding: 0.5rem 1.25rem;
+      background: rgba(181,96,106,0.15);
+      border: 1px solid rgba(181,96,106,0.3);
+      border-radius: 9999px;
+      color: #D4848E;
+      font-size: 0.8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.2s;
+      margin-bottom: 1rem;
+      margin-left: 0.5rem;
+    }
+    .export-btn:hover { background: rgba(181,96,106,0.3); }
+
+    /* ── TABS ── */
+    .tabs { display: flex; gap: 0.5rem; margin-bottom: 2rem; border-bottom: 1px solid rgba(181,96,106,0.15); padding-bottom: 0; }
+    .tab-btn {
+      padding: 0.65rem 1.5rem;
+      background: none;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: rgba(253,246,227,0.45);
+      font-size: 0.9rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.2s, border-color 0.2s;
+      margin-bottom: -1px;
+    }
+    .tab-btn.active { color: #D4848E; border-bottom-color: #D4848E; }
+    .tab-btn:hover:not(.active) { color: rgba(253,246,227,0.75); }
+    .tab-panel { display: none; }
+    .tab-panel.active { display: block; }
+
+    /* ── FORM CARDS ── */
+    .form-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(181,96,106,0.2);
+      border-radius: 1rem;
+      padding: 1.75rem;
+      margin-bottom: 2rem;
+    }
+    .form-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 1.25rem; color: #D4848E; }
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    @media (max-width: 640px) { .form-grid { grid-template-columns: 1fr; } }
+    .form-field { display: flex; flex-direction: column; gap: 0.4rem; }
+    .form-field label { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: rgba(253,246,227,0.45); }
+    .form-field input, .form-field textarea, .form-field select {
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(181,96,106,0.25);
+      border-radius: 0.6rem;
+      padding: 0.7rem 0.9rem;
+      color: #FDF6E3;
+      font-size: 0.88rem;
+      outline: none;
+      transition: border-color 0.2s;
+      font-family: inherit;
+    }
+    .form-field input:focus, .form-field textarea:focus, .form-field select:focus { border-color: #B5606A; }
+    .form-field textarea { resize: vertical; min-height: 80px; }
+    .form-field select option { background: #1a1208; }
+    .form-full { grid-column: 1 / -1; }
+    .char-count { font-size: 0.68rem; color: rgba(253,246,227,0.3); text-align: right; margin-top: 0.2rem; }
+    .char-count.warn { color: #ffb347; }
+
+    .btn-submit {
+      margin-top: 1.25rem;
+      padding: 0.75rem 2rem;
+      background: linear-gradient(135deg, #B5606A, #D4848E);
+      border: none;
+      border-radius: 9999px;
+      color: #0A0806;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-submit:hover { opacity: 0.9; transform: translateY(-1px); }
+    .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+    /* ── TABLE ACTIONS ── */
+    .event-type-badge { display: inline-block; padding: 0.2rem 0.6rem; border-radius: 9999px; font-size: 0.68rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; }
+    .badge-upcoming { background: rgba(100,200,100,0.15); color: #6ee89a; }
+    .badge-past     { background: rgba(181,96,106,0.2); color: #D4848E; }
+    .badge-published { background: rgba(100,200,100,0.15); color: #6ee89a; }
+    .badge-draft    { background: rgba(150,150,150,0.15); color: #aaa; }
+
+    .btn-icon {
+      padding: 0.3rem 0.7rem;
+      border-radius: 0.4rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid;
+      transition: background 0.2s;
+    }
+    .btn-edit { background: rgba(181,96,106,0.1); border-color: rgba(181,96,106,0.35); color: #D4848E; margin-right: 0.4rem; }
+    .btn-edit:hover { background: rgba(181,96,106,0.25); }
+    .btn-del  { background: rgba(220,50,50,0.1); border-color: rgba(220,50,50,0.35); color: #ff8080; }
+    .btn-del:hover { background: rgba(220,50,50,0.25); }
+
+    .form-msg { margin-top: 0.75rem; font-size: 0.82rem; min-height: 1.2em; }
+    .form-msg.ok  { color: #6ee89a; }
+    .form-msg.err { color: #ff8080; }
+
+    /* ── SECURITY LOG ── */
+    .security-log {
+      background: rgba(255,255,255,0.02);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 0.75rem;
+      padding: 1rem 1.25rem;
+      font-size: 0.78rem;
+      color: rgba(253,246,227,0.4);
+      margin-top: 1.5rem;
+      max-height: 180px;
+      overflow-y: auto;
+      font-family: monospace;
+    }
+    .log-entry { padding: 0.2rem 0; border-bottom: 1px solid rgba(255,255,255,0.04); }
+    .log-entry:last-child { border: none; }
+    .log-ok  { color: #6ee89a; }
+    .log-warn { color: #ffb347; }
+    .log-err  { color: #ff8080; }
+  </style>
+</head>
+<body>
+
+<!-- Background layer -->
+<div class="bg-layer"></div>
+
+<!-- ── LOGIN ── -->
+<div id="login-page">
+  <div class="login-card">
+    <div class="login-logo">
+      <img src="logo2.png" alt="H4H Logo" />
+      <span>Hearts For Humanity</span>
+    </div>
+    <h1>H4H Admin</h1>
+    <p>Authorized personnel only</p>
+
+    <div class="lockout-warning" id="lockout-warning"></div>
+    <div id="login-error"></div>
+
+    <div class="field">
+      <label>Email</label>
+      <input type="email" id="admin-email" placeholder="your@email.com" autocomplete="username" maxlength="100" />
+    </div>
+    <div class="field">
+      <label>Password</label>
+      <input type="password" id="admin-password" placeholder="••••••••" autocomplete="current-password" maxlength="128" />
+    </div>
+
+    <button class="btn-primary" id="login-btn" onclick="doLogin()">Sign In</button>
+
+    <div class="security-log" id="security-log" style="margin-top:1.5rem;">
+      <div class="log-entry">Security log initialized.</div>
+    </div>
+  </div>
+</div>
+
+<!-- ── DASHBOARD ── -->
+<div id="dashboard">
+  <div class="topbar">
+    <div class="topbar-logo">
+      <img src="logo2.png" alt="H4H" />
+      <div class="topbar-brand">H4H Admin</div>
+    </div>
+    <div class="topbar-right">
+      <span class="topbar-email" id="admin-email-display"></span>
+      <span class="session-timer" id="session-timer">Session: 30:00</span>
+      <button class="btn-logout" onclick="doLogout()">Sign Out</button>
+    </div>
+  </div>
+
+  <div class="dashboard-body">
+
+    <div class="tabs">
+      <button class="tab-btn active" onclick="switchTab('volunteers')">👥 Volunteers</button>
+      <button class="tab-btn" onclick="switchTab('events')">📅 Events</button>
+      <button class="tab-btn" onclick="switchTab('news')">📰 News</button>
+      <button class="tab-btn" onclick="switchTab('gallery')">🖼 Gallery</button>
+      <button class="tab-btn" onclick="switchTab('members')">👤 Members</button>
+    </div>
+
+    <!-- ── VOLUNTEERS TAB ── -->
+    <div id="tab-volunteers" class="tab-panel active">
+      <div class="stats-row">
+        <div class="stat-card"><div class="num" id="stat-total">—</div><div class="label">Total Signups</div></div>
+        <div class="stat-card"><div class="num" id="stat-today">—</div><div class="label">Joined Today</div></div>
+        <div class="stat-card"><div class="num" id="stat-this-week">—</div><div class="label">This Week</div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="section-title" style="margin-bottom:0;">Volunteer Signups</div>
+        <div>
+          <button class="refresh-btn" onclick="loadVolunteers()">↻ Refresh</button>
+          <button class="export-btn" onclick="exportCSV()">↓ Export CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>#</th><th>Name</th><th>Email</th><th>Phone</th><th>Interest</th><th>Message</th><th>Signed Up</th></tr>
+          </thead>
+          <tbody id="volunteers-tbody">
+            <tr><td colspan="7" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── EVENTS TAB ── -->
+    <div id="tab-events" class="tab-panel">
+      <div class="form-card">
+        <h3 id="event-form-title">✦ Add New Event</h3>
+        <input type="hidden" id="event-edit-id" value="" />
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Title (English)</label>
+            <input type="text" id="ev-title" placeholder="e.g. Meal Distribution Drive" maxlength="120" />
+          </div>
+          <div class="form-field">
+            <label>Title (Arabic)</label>
+            <input type="text" id="ev-title-ar" placeholder="مثال: حملة توزيع وجبات" dir="rtl" maxlength="120" />
+          </div>
+          <div class="form-field">
+            <label>Date</label>
+            <input type="date" id="ev-date" lang="en" />
+          </div>
+          <div class="form-field">
+            <label>Time</label>
+            <input type="text" id="ev-time" placeholder="e.g. 4:00 PM – 7:00 PM" maxlength="60" />
+          </div>
+          <div class="form-field">
+            <label>Location</label>
+            <input type="text" id="ev-location" placeholder="e.g. Riyadh, Al Malaz" maxlength="120" />
+          </div>
+          <div class="form-field">
+            <label>Type</label>
+            <select id="ev-type">
+              <option value="upcoming">Upcoming</option>
+              <option value="past">Past</option>
+            </select>
+          </div>
+          <div class="form-field form-full">
+            <label>Description (English)</label>
+            <textarea id="ev-desc" placeholder="Brief description of the event…" maxlength="800"></textarea>
+            <div class="char-count" id="ev-desc-count">0 / 800</div>
+          </div>
+          <div class="form-field form-full">
+            <label>Description (Arabic)</label>
+            <textarea id="ev-desc-ar" placeholder="وصف مختصر للفعالية…" dir="rtl" maxlength="800"></textarea>
+          </div>
+          <div class="form-field form-full">
+            <label>Image URL (optional)</label>
+            <input type="url" id="ev-image" placeholder="https://…" maxlength="500" />
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button class="btn-submit" id="ev-submit-btn" onclick="submitEvent()">＋ Add Event</button>
+          <button class="btn-submit" id="ev-cancel-btn" onclick="cancelEventEdit()" style="display:none;background:rgba(255,255,255,0.08);color:#FDF6E3;">✕ Cancel</button>
+        </div>
+        <div class="form-msg" id="ev-msg"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="section-title" style="margin-bottom:0;">All Events</div>
+        <button class="refresh-btn" onclick="loadEvents()">↻ Refresh</button>
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Title</th><th>Date</th><th>Time</th><th>Location</th><th>Type</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="events-tbody">
+            <tr><td colspan="6" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── NEWS TAB ── -->
+    <div id="tab-news" class="tab-panel">
+      <div class="form-card">
+        <h3 id="news-form-title">✦ Publish a News Post</h3>
+        <input type="hidden" id="news-edit-id" value="" />
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Headline (English)</label>
+            <input type="text" id="news-title" placeholder="e.g. H4H Launches New CPR Campaign" maxlength="160" />
+            <div class="char-count" id="news-title-count">0 / 160</div>
+          </div>
+          <div class="form-field">
+            <label>Headline (Arabic)</label>
+            <input type="text" id="news-title-ar" placeholder="مثال: H4H تطلق حملة الإسعافات الأولية" dir="rtl" maxlength="160" />
+          </div>
+          <div class="form-field">
+            <label>Category</label>
+            <select id="news-category">
+              <option value="announcement">📢 Announcement</option>
+              <option value="event">📅 Event</option>
+              <option value="achievement">🏆 Achievement</option>
+              <option value="health">🩺 Health Tip</option>
+              <option value="update">🔔 Update</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Status</label>
+            <select id="news-status">
+              <option value="published">✅ Published (visible on site)</option>
+              <option value="draft">📝 Draft (hidden)</option>
+            </select>
+          </div>
+          <div class="form-field form-full">
+            <label>Body (English)</label>
+            <textarea id="news-body" placeholder="Write the full news content here…" maxlength="3000" style="min-height:120px;"></textarea>
+            <div class="char-count" id="news-body-count">0 / 3000</div>
+          </div>
+          <div class="form-field form-full">
+            <label>Body (Arabic)</label>
+            <textarea id="news-body-ar" placeholder="اكتب المحتوى الكامل هنا…" dir="rtl" maxlength="3000" style="min-height:120px;"></textarea>
+          </div>
+          <div class="form-field form-full">
+            <label>Cover Image URL (optional)</label>
+            <input type="url" id="news-image" placeholder="https://…" maxlength="500" />
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button class="btn-submit" id="news-submit-btn" onclick="submitNews()">📰 Publish Post</button>
+          <button class="btn-submit" id="news-cancel-btn" onclick="cancelNewsEdit()" style="display:none;background:rgba(255,255,255,0.08);color:#FDF6E3;">✕ Cancel</button>
+        </div>
+        <div class="form-msg" id="news-msg"></div>
+      </div>
+
+      <!-- Filter -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <div class="section-title" style="margin-bottom:0;">All News Posts</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <select id="news-filter" onchange="loadNews()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(181,96,106,0.25);border-radius:0.6rem;padding:0.45rem 0.8rem;color:#FDF6E3;font-size:0.82rem;outline:none;">
+            <option value="all">All</option>
+            <option value="published">Published</option>
+            <option value="draft">Drafts</option>
+          </select>
+          <button class="refresh-btn" style="margin-bottom:0;" onclick="loadNews()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Headline</th><th>Category</th><th>Status</th><th>Published</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="news-tbody">
+            <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- end #tab-news -->
+
+    <!-- ── GALLERY TAB ── -->
+    <div id="tab-gallery" class="tab-panel">
+
+      <!-- Upload form -->
+      <div class="form-card">
+        <h3>🖼 Upload Photo to Gallery</h3>
+        <div class="form-grid">
+          <div class="form-field form-full">
+            <label>Photo (JPG, PNG, WebP — max 5 MB)</label>
+            <input type="file" id="gallery-file" accept="image/jpeg,image/png,image/webp"
+              style="background:rgba(255,255,255,0.06);border:1px solid rgba(181,96,106,0.25);border-radius:0.6rem;padding:0.7rem 0.9rem;color:#FDF6E3;font-size:0.88rem;cursor:pointer;" />
+            <!-- Preview -->
+            <div id="gallery-preview-wrap" style="display:none;margin-top:0.75rem;">
+              <img id="gallery-preview-img" style="max-height:160px;border-radius:0.75rem;border:1px solid rgba(181,96,106,0.2);object-fit:cover;" />
+            </div>
+          </div>
+          <div class="form-field">
+            <label>Caption (English)</label>
+            <input type="text" id="gallery-caption" placeholder="e.g. Meal distribution drive — Riyadh" maxlength="120" />
+          </div>
+          <div class="form-field">
+            <label>Caption (Arabic)</label>
+            <input type="text" id="gallery-caption-ar" placeholder="مثال: حملة توزيع الوجبات — الرياض" dir="rtl" maxlength="120" />
+          </div>
+        </div>
+        <!-- Upload progress -->
+        <div id="gallery-progress-wrap" style="display:none;margin-top:1rem;">
+          <div style="background:rgba(255,255,255,0.06);border-radius:9999px;height:6px;overflow:hidden;">
+            <div id="gallery-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#B5606A,#D4848E);transition:width 0.3s;border-radius:9999px;"></div>
+          </div>
+          <div id="gallery-progress-label" style="font-size:0.75rem;color:rgba(253,246,227,0.4);margin-top:0.4rem;">Uploading…</div>
+        </div>
+        <button class="btn-submit" id="gallery-upload-btn" onclick="uploadGalleryPhoto()" style="margin-top:1.25rem;">⬆ Upload Photo</button>
+        <div class="form-msg" id="gallery-msg"></div>
+      </div>
+
+      <!-- Grid -->
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;">
+        <div class="section-title" style="margin-bottom:0;">Gallery Photos</div>
+        <button class="refresh-btn" style="margin-bottom:0;" onclick="loadGallery()">↻ Refresh</button>
+      </div>
+      <div id="gallery-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:1rem;">
+        <div style="color:rgba(253,246,227,0.3);font-size:0.9rem;padding:3rem;text-align:center;grid-column:1/-1;">Loading…</div>
+      </div>
+
+    </div><!-- end #tab-gallery -->
+
+    <!-- ── MEMBERS TAB ── -->
+    <div id="tab-members" class="tab-panel">
+      <div class="form-card">
+        <h3 id="member-form-title">✦ Add New Member</h3>
+        <input type="hidden" id="member-edit-id" value="" />
+        <div class="form-grid">
+          <div class="form-field">
+            <label>Full Name (English)</label>
+            <input type="text" id="mb-name" placeholder="e.g. Sarah Al-Qahtani" maxlength="100" />
+          </div>
+          <div class="form-field">
+            <label>Full Name (Arabic)</label>
+            <input type="text" id="mb-name-ar" placeholder="مثال: سارة القحطاني" dir="rtl" maxlength="100" />
+          </div>
+          <div class="form-field">
+            <label>Role / Position (English)</label>
+            <input type="text" id="mb-role" placeholder="e.g. President, PR Lead" maxlength="80" />
+          </div>
+          <div class="form-field">
+            <label>Role / Position (Arabic)</label>
+            <input type="text" id="mb-role-ar" placeholder="مثال: الرئيس، مسؤول العلاقات" dir="rtl" maxlength="80" />
+          </div>
+          <div class="form-field">
+            <label>Team</label>
+            <select id="mb-team">
+              <option value="Leadership">Leadership</option>
+              <option value="PR & Media">PR &amp; Media</option>
+              <option value="Outreach">Outreach</option>
+              <option value="Organizing">Organizing</option>
+              <option value="Content">Content</option>
+              <option value="Volunteering">Volunteering</option>
+            </select>
+          </div>
+          <div class="form-field">
+            <label>Display Order</label>
+            <input type="number" id="mb-order" placeholder="0" min="0" max="999" value="0" />
+          </div>
+          <div class="form-field form-full">
+            <label>Photo URL (optional)</label>
+            <input type="url" id="mb-photo" placeholder="https://…" maxlength="500" />
+          </div>
+          <div class="form-field form-full">
+            <label>Bio (English, optional)</label>
+            <textarea id="mb-bio" placeholder="Short bio…" maxlength="400" style="min-height:80px;"></textarea>
+            <div class="char-count" id="mb-bio-count">0 / 400</div>
+          </div>
+          <div class="form-field form-full">
+            <label>Bio (Arabic, optional)</label>
+            <textarea id="mb-bio-ar" placeholder="نبذة مختصرة…" dir="rtl" maxlength="400" style="min-height:80px;"></textarea>
+          </div>
+        </div>
+        <div style="display:flex;gap:0.75rem;align-items:center;flex-wrap:wrap;">
+          <button class="btn-submit" id="mb-submit-btn" onclick="submitMember()">＋ Add Member</button>
+          <button class="btn-submit" id="mb-cancel-btn" onclick="cancelMemberEdit()" style="display:none;background:rgba(255,255,255,0.08);color:#FDF6E3;">✕ Cancel</button>
+        </div>
+        <div class="form-msg" id="mb-msg"></div>
+      </div>
+
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:0.5rem;">
+        <div class="section-title" style="margin-bottom:0;">All Members</div>
+        <div style="display:flex;gap:0.5rem;align-items:center;">
+          <select id="mb-filter" onchange="loadMembers()" style="background:rgba(255,255,255,0.06);border:1px solid rgba(181,96,106,0.25);border-radius:0.6rem;padding:0.45rem 0.8rem;color:#FDF6E3;font-size:0.82rem;outline:none;">
+            <option value="all">All Teams</option>
+            <option value="Leadership">Leadership</option>
+            <option value="PR & Media">PR &amp; Media</option>
+            <option value="Outreach">Outreach</option>
+            <option value="Organizing">Organizing</option>
+            <option value="Content">Content</option>
+            <option value="Volunteering">Volunteering</option>
+          </select>
+          <button class="refresh-btn" style="margin-bottom:0;" onclick="loadMembers()">↻ Refresh</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr><th>Photo</th><th>Name</th><th>Role</th><th>Team</th><th>Actions</th></tr>
+          </thead>
+          <tbody id="members-tbody">
+            <tr><td colspan="5" class="empty-state">Loading…</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div><!-- end #tab-members -->
+
+  </div>
+</div>
+
+<script>
+(function() {
+  'use strict';
+
+  // ─────────────────────────────────────────────
+  // SECURITY CONFIG
+  // ─────────────────────────────────────────────
+  const ALLOWED_EMAILS  = ['moody20036yotyob@gmail.com', 'abdulrahmanrashedadam@gmail.com']; // whitelist — add admin emails here
+  const MAX_ATTEMPTS    = 5;
+  const LOCKOUT_MS      = 15 * 60 * 1000; // 15 minutes
+  const SESSION_TIMEOUT = 30 * 60 * 1000; // 30 minutes auto-logout
+  const RATE_LIMIT_KEY  = 'h4h_login_attempts';
+  const LOCKOUT_KEY     = 'h4h_lockout_until';
+
+  // ─────────────────────────────────────────────
+  // SUPABASE
+  // ─────────────────────────────────────────────
+  const _supabase = supabase.createClient(
+    'https://ikgrbnoxlnzanbljrsso.supabase.co',
+    'sb_publishable_qVBEUcLTpfNndMXJ5y-I8w_ieE1bSTN'
+  );
+
+  // ─────────────────────────────────────────────
+  // SECURITY LOG
+  // ─────────────────────────────────────────────
+  function secLog(msg, type = '') {
+    const log = document.getElementById('security-log');
+    if (!log) return;
+    const now = new Date().toLocaleTimeString('en-GB');
+    const el = document.createElement('div');
+    el.className = 'log-entry' + (type ? ' log-' + type : '');
+    el.textContent = `[${now}] ${msg}`;
+    log.prepend(el);
+    // Keep max 30 entries
+    while (log.children.length > 30) log.removeChild(log.lastChild);
+  }
+
+  // ─────────────────────────────────────────────
+  // RATE LIMITING
+  // ─────────────────────────────────────────────
+  function getAttempts() { return parseInt(localStorage.getItem(RATE_LIMIT_KEY) || '0'); }
+  function incAttempts() { localStorage.setItem(RATE_LIMIT_KEY, getAttempts() + 1); }
+  function resetAttempts() { localStorage.removeItem(RATE_LIMIT_KEY); localStorage.removeItem(LOCKOUT_KEY); }
+  function isLockedOut() {
+    const until = parseInt(localStorage.getItem(LOCKOUT_KEY) || '0');
+    return Date.now() < until;
+  }
+  function lockOut() {
+    const until = Date.now() + LOCKOUT_MS;
+    localStorage.setItem(LOCKOUT_KEY, until);
+  }
+  function getLockoutRemaining() {
+    const until = parseInt(localStorage.getItem(LOCKOUT_KEY) || '0');
+    return Math.max(0, Math.ceil((until - Date.now()) / 1000 / 60));
+  }
+
+  // ─────────────────────────────────────────────
+  // SESSION TIMEOUT
+  // ─────────────────────────────────────────────
+  let sessionEndTime = 0;
+  let sessionInterval = null;
+
+  function startSessionTimer() {
+    sessionEndTime = Date.now() + SESSION_TIMEOUT;
+    if (sessionInterval) clearInterval(sessionInterval);
+    sessionInterval = setInterval(() => {
+      const remaining = sessionEndTime - Date.now();
+      const el = document.getElementById('session-timer');
+      if (remaining <= 0) {
+        secLog('Session expired — auto logout.', 'warn');
+        doLogout();
+        return;
+      }
+      const mins = Math.floor(remaining / 60000);
+      const secs = Math.floor((remaining % 60000) / 1000);
+      el.textContent = `Session: ${mins}:${secs.toString().padStart(2, '0')}`;
+      el.className = 'session-timer' + (mins < 5 ? ' warning' : '');
+    }, 1000);
+  }
+
+  // Reset session timer on any activity
+  function resetSessionTimer() { sessionEndTime = Date.now() + SESSION_TIMEOUT; }
+  document.addEventListener('mousemove', resetSessionTimer);
+  document.addEventListener('keydown',   resetSessionTimer);
+  document.addEventListener('click',     resetSessionTimer);
+
+  // ─────────────────────────────────────────────
+  // AUTH CHECK ON LOAD
+  // ─────────────────────────────────────────────
+  (async () => {
+    // Check lockout first
+    if (isLockedOut()) {
+      const mins = getLockoutRemaining();
+      showLockoutWarning(`Too many failed attempts. Try again in ${mins} minute(s).`);
+      document.getElementById('login-btn').disabled = true;
+      secLog(`Page loaded while locked out (${mins} min remaining).`, 'warn');
+    }
+
+    const { data: { session } } = await _supabase.auth.getSession();
+    if (session) {
+      if (!isEmailAllowed(session.user.email)) {
+        secLog(`Unauthorized email on session restore: ${session.user.email}`, 'err');
+        await _supabase.auth.signOut();
+        return;
+      }
+      secLog(`Session restored: ${session.user.email}`, 'ok');
+      showDashboard(session.user);
+    }
+  })();
+
+  // ─────────────────────────────────────────────
+  // EMAIL WHITELIST
+  // ─────────────────────────────────────────────
+  function isEmailAllowed(email) {
+    return ALLOWED_EMAILS.includes(email.toLowerCase().trim());
+  }
+
+  // ─────────────────────────────────────────────
+  // LOGIN
+  // ─────────────────────────────────────────────
+  window.doLogin = async function() {
+    const emailEl = document.getElementById('admin-email');
+    const passEl  = document.getElementById('admin-password');
+    const btn     = document.getElementById('login-btn');
+    const errBox  = document.getElementById('login-error');
+
+    errBox.style.display = 'none';
+
+    // Lockout check
+    if (isLockedOut()) {
+      showLockoutWarning(`Account locked. Try again in ${getLockoutRemaining()} minute(s).`);
+      return;
+    }
+
+    const email    = emailEl.value.trim().toLowerCase();
+    const password = passEl.value;
+
+    // Basic input validation
+    if (!email || !password) {
+      showError('Please enter both email and password.');
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      showError('Invalid email format.');
+      return;
+    }
+    if (password.length < 6) {
+      showError('Password too short.');
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Signing in…';
+
+    const { data, error } = await _supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      incAttempts();
+      const attempts = getAttempts();
+      const remaining = MAX_ATTEMPTS - attempts;
+
+      secLog(`Failed login attempt for: ${email} (${attempts}/${MAX_ATTEMPTS})`, 'err');
+
+      if (attempts >= MAX_ATTEMPTS) {
+        lockOut();
+        showLockoutWarning(`Too many failed attempts. Locked for 15 minutes.`);
+        showError('Account locked due to too many failed attempts.');
+        btn.disabled = true;
+        btn.textContent = 'Locked';
+        return;
+      }
+
+      showError(`${error.message} — ${remaining} attempt(s) remaining.`);
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      passEl.value = '';
+      return;
+    }
+
+    // Email whitelist check
+    if (!isEmailAllowed(data.user.email)) {
+      secLog(`Unauthorized login blocked: ${data.user.email}`, 'err');
+      await _supabase.auth.signOut();
+      showError('Access denied. This account is not authorized.');
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      return;
+    }
+
+    resetAttempts();
+    secLog(`Successful login: ${data.user.email}`, 'ok');
+    showDashboard(data.user);
+  };
+
+  function showError(msg) {
+    const el = document.getElementById('login-error');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  function showLockoutWarning(msg) {
+    const el = document.getElementById('lockout-warning');
+    el.textContent = msg;
+    el.style.display = 'block';
+  }
+
+  // ─────────────────────────────────────────────
+  // LOGOUT
+  // ─────────────────────────────────────────────
+  window.doLogout = async function() {
+    if (sessionInterval) clearInterval(sessionInterval);
+    await _supabase.auth.signOut();
+    secLog('User signed out.', 'ok');
+    document.getElementById('dashboard').style.display = 'none';
+    document.getElementById('login-page').style.display = 'flex';
+    document.getElementById('admin-password').value = '';
+    document.getElementById('login-btn').disabled = false;
+    document.getElementById('login-btn').textContent = 'Sign In';
+  };
+
+  function showDashboard(user) {
+    document.getElementById('login-page').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    document.getElementById('admin-email-display').textContent = user.email;
+    startSessionTimer();
+    loadVolunteers();
+  }
+
+  // ─────────────────────────────────────────────
+  // SANITIZATION
+  // ─────────────────────────────────────────────
+  function esc(str) {
+    return String(str || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');
+  }
+
+  function sanitize(str, maxLen = 500) {
+    return String(str || '').trim().slice(0, maxLen);
+  }
+
+  function isValidUrl(str) {
+    if (!str) return true;
+    try { const u = new URL(str); return ['https:', 'http:'].includes(u.protocol); }
+    catch { return false; }
+  }
+
+  // ─────────────────────────────────────────────
+  // TAB SWITCHING
+  // ─────────────────────────────────────────────
+  window.switchTab = function(tab) {
+    const names = ['volunteers', 'events', 'news', 'gallery', 'members'];
+    document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', names[i] === tab));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    if (tab === 'events')  loadEvents();
+    if (tab === 'news')    loadNews();
+    if (tab === 'gallery') loadGallery();
+    if (tab === 'members') loadMembers();
+  };
+
+  // ─────────────────────────────────────────────
+  // VOLUNTEERS
+  // ─────────────────────────────────────────────
+  let allRows = [];
+
+  window.loadVolunteers = async function() {
+    const tbody = document.getElementById('volunteers-tbody');
+    tbody.innerHTML = '<tr><td colspan="7" class="empty-state">Loading…</td></tr>';
+
+    const { data, error } = await _supabase.from('volunteers').select('*').order('created_at', { ascending: false });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="7" class="empty-state">Error: ${esc(error.message)}</td></tr>`;
+      return;
+    }
+
+    allRows = data || [];
+
+    const now      = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    const weekAgo  = new Date(now - 7 * 86400000).toISOString();
+    document.getElementById('stat-total').textContent     = allRows.length;
+    document.getElementById('stat-today').textContent     = allRows.filter(r => r.created_at.startsWith(todayStr)).length;
+    document.getElementById('stat-this-week').textContent = allRows.filter(r => r.created_at >= weekAgo).length;
+
+    if (!allRows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="empty-state">No signups yet.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allRows.map((r, i) => {
+      const msg      = r.message || '';
+      const roleMatch = msg.match(/^\[(\w+)\]/);
+      const role     = roleMatch ? roleMatch[1] : '';
+      const cleanMsg = msg.replace(/^\[\w+\]\s*/, '') || '—';
+      const date     = new Date(r.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const badgeClass = role === 'volunteer' ? 'badge-volunteer' : role === 'donate' ? 'badge-donate' : role === 'both' ? 'badge-both' : '';
+
+      return `<tr>
+        <td style="color:rgba(253,246,227,0.3)">${allRows.length - i}</td>
+        <td><strong>${esc(r.name)}</strong></td>
+        <td><a href="mailto:${esc(r.email)}" style="color:#D4848E;text-decoration:none;">${esc(r.email)}</a></td>
+        <td>${r.phone ? esc(r.phone) : '<span style="color:rgba(253,246,227,0.3)">—</span>'}</td>
+        <td>${role ? `<span class="badge ${badgeClass}">${esc(role)}</span>` : '<span style="color:rgba(253,246,227,0.3)">—</span>'}</td>
+        <td style="max-width:200px;color:rgba(253,246,227,0.7)">${esc(cleanMsg)}</td>
+        <td style="color:rgba(253,246,227,0.5);white-space:nowrap">${date}</td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.exportCSV = function() {
+    if (!allRows.length) return;
+    const headers = ['ID','Name','Email','Phone','Message','Signed Up'];
+    const rows = allRows.map(r => [
+      r.id, r.name, r.email, r.phone || '', r.message || '',
+      new Date(r.created_at).toLocaleString('en-GB')
+    ]);
+    const csv = [headers, ...rows].map(r => r.map(c => `"${String(c).replace(/"/g,'""')}"`).join(',')).join('\n');
+    const a = document.createElement('a');
+    a.href = 'data:text/csv;charset=utf-8,' + encodeURIComponent(csv);
+    a.download = `h4h-volunteers-${new Date().toISOString().slice(0,10)}.csv`;
+    a.click();
+  };
+
+  // ─────────────────────────────────────────────
+  // EVENTS
+  // ─────────────────────────────────────────────
+  let allEvents = [];
+
+  document.getElementById('ev-desc').addEventListener('input', function() {
+    const c = document.getElementById('ev-desc-count');
+    c.textContent = `${this.value.length} / 800`;
+    c.className = 'char-count' + (this.value.length > 700 ? ' warn' : '');
+  });
+
+  window.loadEvents = async function() {
+    const tbody = document.getElementById('events-tbody');
+    tbody.innerHTML = '<tr><td colspan="6" class="empty-state">Loading…</td></tr>';
+
+    const { data, error } = await _supabase.from('events').select('*').order('date', { ascending: true });
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="6" class="empty-state">Error: ${esc(error.message)}</td></tr>`;
+      return;
+    }
+
+    allEvents = data || [];
+    if (!allEvents.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="empty-state">No events yet. Add one above.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allEvents.map(ev => {
+      const dateStr  = ev.date ? new Date(ev.date + 'T00:00:00').toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' }) : '—';
+      const badgeClass = ev.type === 'upcoming' ? 'badge-upcoming' : 'badge-past';
+      return `<tr>
+        <td><strong>${esc(ev.title)}</strong>${ev.title_ar ? `<br/><span style="color:rgba(253,246,227,0.4);font-size:0.8rem;" dir="rtl">${esc(ev.title_ar)}</span>` : ''}</td>
+        <td style="white-space:nowrap">${dateStr}</td>
+        <td style="color:rgba(253,246,227,0.6)">${esc(ev.time_str || '—')}</td>
+        <td style="color:rgba(253,246,227,0.6)">${esc(ev.location || '—')}</td>
+        <td><span class="event-type-badge ${badgeClass}">${esc(ev.type || 'upcoming')}</span></td>
+        <td>
+          <button class="btn-icon btn-edit" onclick="editEvent('${esc(ev.id)}')">Edit</button>
+          <button class="btn-icon btn-del"  onclick="deleteEvent('${esc(ev.id)}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.submitEvent = async function() {
+    const editId = document.getElementById('event-edit-id').value;
+    const title  = sanitize(document.getElementById('ev-title').value, 120);
+    if (!title) { showMsg('ev-msg', 'Title is required.', 'err'); return; }
+
+    const imageUrl = sanitize(document.getElementById('ev-image').value, 500);
+    if (imageUrl && !isValidUrl(imageUrl)) { showMsg('ev-msg', 'Invalid image URL.', 'err'); return; }
+
+    const payload = {
+      title,
+      title_ar:       sanitize(document.getElementById('ev-title-ar').value, 120) || null,
+      date:           document.getElementById('ev-date').value || null,
+      time_str:       sanitize(document.getElementById('ev-time').value, 60) || null,
+      location:       sanitize(document.getElementById('ev-location').value, 120) || null,
+      description:    sanitize(document.getElementById('ev-desc').value, 800) || null,
+      description_ar: sanitize(document.getElementById('ev-desc-ar').value, 800) || null,
+      image_url:      imageUrl || null,
+      type:           document.getElementById('ev-type').value,
+    };
+
+    const btn = document.getElementById('ev-submit-btn');
+    btn.disabled = true;
+
+    let error;
+    if (editId) {
+      ({ error } = await _supabase.from('events').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await _supabase.from('events').insert([payload]));
+    }
+
+    btn.disabled = false;
+    if (error) { showMsg('ev-msg', 'Error: ' + error.message, 'err'); return; }
+
+    showMsg('ev-msg', editId ? '✓ Event updated!' : '✓ Event added!', 'ok');
+    cancelEventEdit();
+    loadEvents();
+  };
+
+  window.editEvent = function(id) {
+    const ev = allEvents.find(e => e.id === id);
+    if (!ev) return;
+    document.getElementById('event-edit-id').value   = id;
+    document.getElementById('ev-title').value         = ev.title || '';
+    document.getElementById('ev-title-ar').value      = ev.title_ar || '';
+    document.getElementById('ev-date').value          = ev.date || '';
+    document.getElementById('ev-time').value          = ev.time_str || '';
+    document.getElementById('ev-location').value      = ev.location || '';
+    document.getElementById('ev-desc').value          = ev.description || '';
+    document.getElementById('ev-desc-ar').value       = ev.description_ar || '';
+    document.getElementById('ev-image').value         = ev.image_url || '';
+    document.getElementById('ev-type').value          = ev.type || 'upcoming';
+    document.getElementById('event-form-title').textContent  = '✦ Edit Event';
+    document.getElementById('ev-submit-btn').textContent     = '✓ Save Changes';
+    document.getElementById('ev-cancel-btn').style.display   = '';
+    document.querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.cancelEventEdit = function() {
+    document.getElementById('event-edit-id').value = '';
+    ['ev-title','ev-title-ar','ev-date','ev-time','ev-location','ev-desc','ev-desc-ar','ev-image'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('ev-type').value                = 'upcoming';
+    document.getElementById('event-form-title').textContent = '✦ Add New Event';
+    document.getElementById('ev-submit-btn').textContent    = '＋ Add Event';
+    document.getElementById('ev-cancel-btn').style.display  = 'none';
+    document.getElementById('ev-msg').textContent           = '';
+    document.getElementById('ev-desc-count').textContent    = '0 / 800';
+  };
+
+  window.deleteEvent = async function(id) {
+    if (!confirm('Delete this event? This cannot be undone.')) return;
+    const { error } = await _supabase.from('events').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+    secLog('Event deleted: ' + id, 'warn');
+    loadEvents();
+  };
+
+  // ─────────────────────────────────────────────
+  // NEWS
+  // ─────────────────────────────────────────────
+  let allNews = [];
+
+  // Character counters
+  document.getElementById('news-title').addEventListener('input', function() {
+    const c = document.getElementById('news-title-count');
+    c.textContent = `${this.value.length} / 160`;
+    c.className = 'char-count' + (this.value.length > 130 ? ' warn' : '');
+  });
+  document.getElementById('news-body').addEventListener('input', function() {
+    const c = document.getElementById('news-body-count');
+    c.textContent = `${this.value.length} / 3000`;
+    c.className = 'char-count' + (this.value.length > 2700 ? ' warn' : '');
+  });
+
+  window.loadNews = async function() {
+    const tbody  = document.getElementById('news-tbody');
+    const filter = document.getElementById('news-filter').value;
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Loading…</td></tr>';
+
+    let query = _supabase.from('news').select('*').order('created_at', { ascending: false });
+    if (filter !== 'all') query = query.eq('status', filter);
+
+    const { data, error } = await query;
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Error: ${esc(error.message)}</td></tr>`;
+      return;
+    }
+
+    allNews = data || [];
+
+    if (!allNews.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No news posts yet. Write one above.</td></tr>';
+      return;
+    }
+
+    const catIcons = { announcement:'📢', event:'📅', achievement:'🏆', health:'🩺', update:'🔔' };
+
+    tbody.innerHTML = allNews.map(n => {
+      const date    = new Date(n.created_at).toLocaleDateString('en-GB', { day:'numeric', month:'short', year:'numeric' });
+      const icon    = catIcons[n.category] || '📰';
+      const statusBadge = n.status === 'published' ? 'badge-published' : 'badge-draft';
+
+      return `<tr>
+        <td>
+          <strong>${esc(n.title)}</strong>
+          ${n.title_ar ? `<br/><span style="color:rgba(253,246,227,0.4);font-size:0.8rem;" dir="rtl">${esc(n.title_ar)}</span>` : ''}
+        </td>
+        <td style="white-space:nowrap">${icon} ${esc(n.category || '—')}</td>
+        <td><span class="event-type-badge ${statusBadge}">${esc(n.status || 'draft')}</span></td>
+        <td style="color:rgba(253,246,227,0.5);white-space:nowrap">${date}</td>
+        <td>
+          <button class="btn-icon btn-edit" onclick="editNews('${esc(n.id)}')">Edit</button>
+          <button class="btn-icon btn-del"  onclick="deleteNews('${esc(n.id)}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.submitNews = async function() {
+    const editId = document.getElementById('news-edit-id').value;
+    const title  = sanitize(document.getElementById('news-title').value, 160);
+    const body   = sanitize(document.getElementById('news-body').value, 3000);
+
+    if (!title) { showMsg('news-msg', 'Headline is required.', 'err'); return; }
+    if (!body)  { showMsg('news-msg', 'Body content is required.', 'err'); return; }
+
+    const imageUrl = sanitize(document.getElementById('news-image').value, 500);
+    if (imageUrl && !isValidUrl(imageUrl)) { showMsg('news-msg', 'Invalid image URL.', 'err'); return; }
+
+    const payload = {
+      title,
+      title_ar:  sanitize(document.getElementById('news-title-ar').value, 160) || null,
+      body,
+      body_ar:   sanitize(document.getElementById('news-body-ar').value, 3000) || null,
+      category:  document.getElementById('news-category').value,
+      status:    document.getElementById('news-status').value,
+      image_url: imageUrl || null,
+    };
+
+    const btn = document.getElementById('news-submit-btn');
+    btn.disabled = true;
+
+    let error;
+    if (editId) {
+      ({ error } = await _supabase.from('news').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await _supabase.from('news').insert([payload]));
+    }
+
+    btn.disabled = false;
+    if (error) { showMsg('news-msg', 'Error: ' + error.message, 'err'); return; }
+
+    const action = editId ? 'updated' : 'published';
+    secLog(`News post ${action}: "${title}"`, 'ok');
+    showMsg('news-msg', `✓ Post ${action}!`, 'ok');
+    cancelNewsEdit();
+    loadNews();
+  };
+
+  window.editNews = function(id) {
+    const n = allNews.find(x => x.id === id);
+    if (!n) return;
+    document.getElementById('news-edit-id').value          = id;
+    document.getElementById('news-title').value            = n.title || '';
+    document.getElementById('news-title-ar').value         = n.title_ar || '';
+    document.getElementById('news-body').value             = n.body || '';
+    document.getElementById('news-body-ar').value          = n.body_ar || '';
+    document.getElementById('news-category').value         = n.category || 'announcement';
+    document.getElementById('news-status').value           = n.status || 'draft';
+    document.getElementById('news-image').value            = n.image_url || '';
+    document.getElementById('news-form-title').textContent = '✦ Edit News Post';
+    document.getElementById('news-submit-btn').textContent = '✓ Save Changes';
+    document.getElementById('news-cancel-btn').style.display = '';
+    document.getElementById('tab-news').querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.cancelNewsEdit = function() {
+    document.getElementById('news-edit-id').value             = '';
+    ['news-title','news-title-ar','news-body','news-body-ar','news-image'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('news-category').value            = 'announcement';
+    document.getElementById('news-status').value              = 'published';
+    document.getElementById('news-form-title').textContent    = '✦ Publish a News Post';
+    document.getElementById('news-submit-btn').textContent    = '📰 Publish Post';
+    document.getElementById('news-cancel-btn').style.display  = 'none';
+    document.getElementById('news-msg').textContent           = '';
+    document.getElementById('news-title-count').textContent   = '0 / 160';
+    document.getElementById('news-body-count').textContent    = '0 / 3000';
+  };
+
+  window.deleteNews = async function(id) {
+    if (!confirm('Delete this news post? This cannot be undone.')) return;
+    const { error } = await _supabase.from('news').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+    secLog('News post deleted: ' + id, 'warn');
+    loadNews();
+  };
+
+  // ─────────────────────────────────────────────
+  // GALLERY
+  // ─────────────────────────────────────────────
+  const SUPABASE_URL = 'https://ikgrbnoxlnzanbljrsso.supabase.co';
+
+  // Image preview on file select
+  document.getElementById('gallery-file').addEventListener('change', function() {
+    const file = this.files[0];
+    const wrap = document.getElementById('gallery-preview-wrap');
+    const img  = document.getElementById('gallery-preview-img');
+    if (file) {
+      img.src = URL.createObjectURL(file);
+      wrap.style.display = 'block';
+    } else {
+      wrap.style.display = 'none';
+    }
+  });
+
+  window.uploadGalleryPhoto = async function() {
+    const fileInput = document.getElementById('gallery-file');
+    const file      = fileInput.files[0];
+    if (!file) { showMsg('gallery-msg', 'Please select a photo first.', 'err'); return; }
+
+    // Validate size (5MB)
+    if (file.size > 5 * 1024 * 1024) { showMsg('gallery-msg', 'File too large. Max 5 MB.', 'err'); return; }
+
+    // Validate type
+    const allowed = ['image/jpeg', 'image/png', 'image/webp'];
+    if (!allowed.includes(file.type)) { showMsg('gallery-msg', 'Only JPG, PNG, WebP allowed.', 'err'); return; }
+
+    const caption   = sanitize(document.getElementById('gallery-caption').value, 120);
+    const captionAr = sanitize(document.getElementById('gallery-caption-ar').value, 120);
+
+    const btn = document.getElementById('gallery-upload-btn');
+    btn.disabled = true;
+
+    // Show progress bar
+    const progressWrap = document.getElementById('gallery-progress-wrap');
+    const progressBar  = document.getElementById('gallery-progress-bar');
+    const progressLbl  = document.getElementById('gallery-progress-label');
+    progressWrap.style.display = 'block';
+    progressBar.style.width = '20%';
+    progressLbl.textContent = 'Uploading…';
+
+    // Generate unique filename
+    const ext      = file.name.split('.').pop().toLowerCase();
+    const filename = `${Date.now()}-${Math.random().toString(36).slice(2)}.${ext}`;
+
+    // Upload to Supabase Storage
+    const { error: upErr } = await _supabase.storage
+      .from('gallery')
+      .upload(filename, file, { contentType: file.type, upsert: false });
+
+    progressBar.style.width = '70%';
+
+    if (upErr) {
+      progressWrap.style.display = 'none';
+      showMsg('gallery-msg', 'Upload failed: ' + upErr.message, 'err');
+      btn.disabled = false;
+      return;
+    }
+
+    // Get public URL
+    const { data: urlData } = _supabase.storage.from('gallery').getPublicUrl(filename);
+    const imageUrl = urlData.publicUrl;
+
+    progressBar.style.width = '90%';
+
+    // Save to gallery table
+    const { error: dbErr } = await _supabase.from('gallery').insert([{
+      image_url:  imageUrl,
+      caption:    caption  || null,
+      caption_ar: captionAr || null,
+    }]);
+
+    progressBar.style.width = '100%';
+    progressLbl.textContent = 'Done!';
+
+    btn.disabled = false;
+
+    if (dbErr) {
+      showMsg('gallery-msg', 'Saved to storage but DB error: ' + dbErr.message, 'err');
+      return;
+    }
+
+    secLog('Gallery photo uploaded: ' + filename, 'ok');
+    showMsg('gallery-msg', '✓ Photo uploaded successfully!', 'ok');
+
+    // Reset form
+    fileInput.value = '';
+    document.getElementById('gallery-caption').value    = '';
+    document.getElementById('gallery-caption-ar').value = '';
+    document.getElementById('gallery-preview-wrap').style.display = 'none';
+    setTimeout(() => { progressWrap.style.display = 'none'; progressBar.style.width = '0%'; }, 1500);
+
+    loadGallery();
+  };
+
+  window.loadGallery = async function() {
+    const grid = document.getElementById('gallery-grid');
+    grid.innerHTML = '<div style="color:rgba(253,246,227,0.3);font-size:0.9rem;padding:3rem;text-align:center;grid-column:1/-1;">Loading…</div>';
+
+    const { data, error } = await _supabase
+      .from('gallery')
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      grid.innerHTML = `<div style="color:#ff8080;padding:2rem;grid-column:1/-1;">Error: ${esc(error.message)}</div>`;
+      return;
+    }
+
+    if (!data || !data.length) {
+      grid.innerHTML = '<div style="color:rgba(253,246,227,0.3);font-size:0.9rem;padding:3rem;text-align:center;grid-column:1/-1;">No photos yet. Upload one above.</div>';
+      return;
+    }
+
+    grid.innerHTML = data.map(photo => `
+      <div style="position:relative;border-radius:0.875rem;overflow:hidden;border:1px solid rgba(181,96,106,0.15);background:rgba(255,255,255,0.03);">
+        <img src="${esc(photo.image_url)}" alt="${esc(photo.caption || '')}"
+          style="width:100%;height:180px;object-fit:cover;display:block;" loading="lazy"
+          onerror="this.style.background='rgba(255,255,255,0.05)';this.style.height='180px';" />
+        <div style="padding:0.75rem;">
+          <div style="font-size:0.8rem;color:rgba(253,246,227,0.75);line-height:1.4;">${esc(photo.caption || '—')}</div>
+          ${photo.caption_ar ? `<div style="font-size:0.75rem;color:rgba(253,246,227,0.4);margin-top:0.2rem;" dir="rtl">${esc(photo.caption_ar)}</div>` : ''}
+          <div style="font-size:0.68rem;color:rgba(253,246,227,0.25);margin-top:0.4rem;">${new Date(photo.created_at).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}</div>
+        </div>
+        <button onclick="deleteGalleryPhoto('${esc(photo.id)}','${esc(photo.image_url)}')"
+          style="position:absolute;top:0.5rem;right:0.5rem;background:rgba(180,30,30,0.85);border:none;border-radius:0.4rem;color:#fff;font-size:0.72rem;font-weight:700;padding:0.25rem 0.6rem;cursor:pointer;backdrop-filter:blur(4px);">
+          ✕ Delete
+        </button>
+      </div>
+    `).join('');
+  };
+
+  window.deleteGalleryPhoto = async function(id, imageUrl) {
+    if (!confirm('Delete this photo from the gallery? This cannot be undone.')) return;
+
+    // Extract filename from URL
+    const filename = imageUrl.split('/').pop();
+
+    // Delete from storage
+    await _supabase.storage.from('gallery').remove([filename]);
+
+    // Delete from DB
+    const { error } = await _supabase.from('gallery').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+
+    secLog('Gallery photo deleted: ' + filename, 'warn');
+    loadGallery();
+  };
+
+  // ─────────────────────────────────────────────
+  // MEMBERS
+  // ─────────────────────────────────────────────
+  let allMembers = [];
+
+  document.getElementById('mb-bio').addEventListener('input', function() {
+    const c = document.getElementById('mb-bio-count');
+    c.textContent = `${this.value.length} / 400`;
+    c.className = 'char-count' + (this.value.length > 350 ? ' warn' : '');
+  });
+
+  window.loadMembers = async function() {
+    const tbody  = document.getElementById('members-tbody');
+    const filter = document.getElementById('mb-filter').value;
+    tbody.innerHTML = '<tr><td colspan="5" class="empty-state">Loading…</td></tr>';
+
+    let query = _supabase.from('members').select('*').order('order_index', { ascending: true }).order('created_at', { ascending: true });
+    if (filter !== 'all') query = query.eq('team', filter);
+
+    const { data, error } = await query;
+
+    if (error) {
+      tbody.innerHTML = `<tr><td colspan="5" class="empty-state">Error: ${esc(error.message)}</td></tr>`;
+      return;
+    }
+
+    allMembers = data || [];
+
+    if (!allMembers.length) {
+      tbody.innerHTML = '<tr><td colspan="5" class="empty-state">No members yet. Add one above.</td></tr>';
+      return;
+    }
+
+    tbody.innerHTML = allMembers.map(m => {
+      const photo = m.photo_url
+        ? `<img src="${esc(m.photo_url)}" style="width:40px;height:40px;border-radius:50%;object-fit:cover;border:1px solid rgba(181,96,106,0.3);" onerror="this.style.display='none'" />`
+        : `<div style="width:40px;height:40px;border-radius:50%;background:rgba(181,96,106,0.15);display:flex;align-items:center;justify-content:center;font-size:1rem;">👤</div>`;
+      return `<tr>
+        <td>${photo}</td>
+        <td>
+          <strong>${esc(m.name)}</strong>
+          ${m.name_ar ? `<br/><span style="color:rgba(253,246,227,0.4);font-size:0.8rem;" dir="rtl">${esc(m.name_ar)}</span>` : ''}
+        </td>
+        <td>
+          <span style="color:#D4848E;">${esc(m.role || '—')}</span>
+          ${m.role_ar ? `<br/><span style="color:rgba(253,246,227,0.4);font-size:0.78rem;" dir="rtl">${esc(m.role_ar)}</span>` : ''}
+        </td>
+        <td><span class="badge badge-volunteer">${esc(m.team || '—')}</span></td>
+        <td>
+          <button class="btn-icon btn-edit" onclick="editMember('${esc(m.id)}')">Edit</button>
+          <button class="btn-icon btn-del"  onclick="deleteMember('${esc(m.id)}')">Delete</button>
+        </td>
+      </tr>`;
+    }).join('');
+  };
+
+  window.submitMember = async function() {
+    const editId = document.getElementById('member-edit-id').value;
+    const name   = sanitize(document.getElementById('mb-name').value, 100);
+    if (!name) { showMsg('mb-msg', 'Full name is required.', 'err'); return; }
+
+    const photoUrl = sanitize(document.getElementById('mb-photo').value, 500);
+    if (photoUrl && !isValidUrl(photoUrl)) { showMsg('mb-msg', 'Invalid photo URL.', 'err'); return; }
+
+    const payload = {
+      name,
+      name_ar:     sanitize(document.getElementById('mb-name-ar').value, 100) || null,
+      role:        sanitize(document.getElementById('mb-role').value, 80) || null,
+      role_ar:     sanitize(document.getElementById('mb-role-ar').value, 80) || null,
+      team:        document.getElementById('mb-team').value,
+      photo_url:   photoUrl || null,
+      bio:         sanitize(document.getElementById('mb-bio').value, 400) || null,
+      bio_ar:      sanitize(document.getElementById('mb-bio-ar').value, 400) || null,
+      order_index: parseInt(document.getElementById('mb-order').value) || 0,
+    };
+
+    const btn = document.getElementById('mb-submit-btn');
+    btn.disabled = true;
+
+    let error;
+    if (editId) {
+      ({ error } = await _supabase.from('members').update(payload).eq('id', editId));
+    } else {
+      ({ error } = await _supabase.from('members').insert([payload]));
+    }
+
+    btn.disabled = false;
+    if (error) { showMsg('mb-msg', 'Error: ' + error.message, 'err'); return; }
+
+    secLog((editId ? 'Member updated: ' : 'Member added: ') + name, 'ok');
+    showMsg('mb-msg', editId ? '✓ Member updated!' : '✓ Member added!', 'ok');
+    cancelMemberEdit();
+    loadMembers();
+  };
+
+  window.editMember = function(id) {
+    const m = allMembers.find(x => x.id === id);
+    if (!m) return;
+    document.getElementById('member-edit-id').value        = id;
+    document.getElementById('mb-name').value               = m.name || '';
+    document.getElementById('mb-name-ar').value            = m.name_ar || '';
+    document.getElementById('mb-role').value               = m.role || '';
+    document.getElementById('mb-role-ar').value            = m.role_ar || '';
+    document.getElementById('mb-team').value               = m.team || 'Leadership';
+    document.getElementById('mb-photo').value              = m.photo_url || '';
+    document.getElementById('mb-bio').value                = m.bio || '';
+    document.getElementById('mb-bio-ar').value             = m.bio_ar || '';
+    document.getElementById('mb-order').value              = m.order_index ?? 0;
+    document.getElementById('mb-bio-count').textContent    = `${(m.bio || '').length} / 400`;
+    document.getElementById('member-form-title').textContent = '✦ Edit Member';
+    document.getElementById('mb-submit-btn').textContent   = '✓ Save Changes';
+    document.getElementById('mb-cancel-btn').style.display = '';
+    document.getElementById('tab-members').querySelector('.form-card').scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  window.cancelMemberEdit = function() {
+    document.getElementById('member-edit-id').value           = '';
+    ['mb-name','mb-name-ar','mb-role','mb-role-ar','mb-photo','mb-bio','mb-bio-ar'].forEach(id => {
+      document.getElementById(id).value = '';
+    });
+    document.getElementById('mb-team').value                  = 'Leadership';
+    document.getElementById('mb-order').value                 = '0';
+    document.getElementById('member-form-title').textContent  = '✦ Add New Member';
+    document.getElementById('mb-submit-btn').textContent      = '＋ Add Member';
+    document.getElementById('mb-cancel-btn').style.display    = 'none';
+    document.getElementById('mb-msg').textContent             = '';
+    document.getElementById('mb-bio-count').textContent       = '0 / 400';
+  };
+
+  window.deleteMember = async function(id) {
+    const m = allMembers.find(x => x.id === id);
+    if (!confirm(`Delete ${m ? m.name : 'this member'}? This cannot be undone.`)) return;
+    const { error } = await _supabase.from('members').delete().eq('id', id);
+    if (error) { alert('Error: ' + error.message); return; }
+    secLog('Member deleted: ' + (m ? m.name : id), 'warn');
+    loadMembers();
+  };
+
+  // ─────────────────────────────────────────────
+  // HELPERS
+  // ─────────────────────────────────────────────
+  function showMsg(elId, msg, type) {
+    const el = document.getElementById(elId);
+    el.textContent = msg;
+    el.className = 'form-msg ' + type;
+    if (type === 'ok') setTimeout(() => { el.textContent = ''; }, 3000);
+  }
+
+  // Enter key on login
+  document.addEventListener('keydown', e => {
+    if (e.key === 'Enter' && document.getElementById('login-page').style.display !== 'none') doLogin();
+  });
+
+})();
+</script>
+</body>
+</html>
